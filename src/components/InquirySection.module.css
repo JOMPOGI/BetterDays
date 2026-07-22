@@ -6,7 +6,7 @@
   justify-content: center;
   background-color: var(--bg-color);
   padding: 2rem;
-  padding-top: 5rem; /* Space for navbar */
+  padding-top: 2rem; /* Reduced space to move form up */
 }
 
 .formWrapper {
@@ -17,17 +17,7 @@
   gap: 2rem;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 1rem;
-}
 
-.header h2 {
-  font-size: 2.5rem;
-  letter-spacing: 0.3em;
-  font-weight: 700;
-  margin-bottom: 2rem;
-}
 
 .content {
   display: flex;

@@ -62,9 +62,6 @@ export function InquirySection() {
   return (
     <div className={styles.sectionContainer}>
       <div className={styles.formWrapper}>
-        <div className={styles.header}>
-          <h2>INQUIRE</h2>
-        </div>
 
         <div className={styles.content}>
           {errorMsg && (

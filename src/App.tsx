@@ -43,10 +43,11 @@ function App() {
           <Testimonials />
         </section>
 
-        <section id="inquire" className="snap-section" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, position: 'relative' }}>
-            <InquirySection />
-          </div>
+        <section id="inquire" className="snap-section">
+          <InquirySection />
+        </section>
+
+        <section id="footer" className="snap-section" style={{ height: 'auto', minHeight: '50vh', display: 'flex', alignItems: 'flex-end' }}>
           <Footer />
         </section>
       </main>
