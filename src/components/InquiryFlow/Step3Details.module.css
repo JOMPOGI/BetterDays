@@ -19,7 +19,8 @@
   top: 0;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-color);
+  opacity: 0.6;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -30,7 +31,7 @@
 }
 
 .backLink:hover {
-  color: #fff;
+  opacity: 1;
 }
 
 .titleArea h3 {
@@ -43,7 +44,8 @@
 
 .titleArea p {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-color);
+  opacity: 0.6;
   margin: 0;
 }
 
@@ -64,29 +66,30 @@
 
 .fieldRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1rem;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 600px) {
   .fieldRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 .field label {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--text-color);
+  opacity: 0.8;
   font-weight: 500;
 }
 
 .field input,
 .field textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   padding: 0.8rem 1rem;
   border-radius: 4px;
-  color: #fff;
+  color: var(--text-color);
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 0.3s ease;
@@ -95,20 +98,20 @@
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--input-border-focus);
+  background: var(--input-bg-focus);
 }
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--input-placeholder);
 }
 
 .submitBtn {
   margin-top: 1rem;
   padding: 1rem;
-  background: #fff;
-  color: #000;
+  background: var(--text-color);
+  color: var(--bg-color);
   border: none;
   border-radius: 4px;
   font-size: 1rem;
@@ -120,7 +123,8 @@
 }
 
 .submitBtn:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: var(--accent-hover);
+  color: var(--bg-color);
 }
 
 .submitBtn:disabled {

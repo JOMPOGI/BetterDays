@@ -20,13 +20,13 @@
 .filters {
   display: flex;
   gap: 2rem;
-  justify-content: center;
+  justify-content: flex-start;
   min-width: max-content;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 768px) {
   .filters {
-    justify-content: flex-start;
+    justify-content: center;
   }
 }
 
