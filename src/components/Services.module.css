@@ -1,13 +1,20 @@
 .servicesSection {
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 6rem 1.5rem 3rem;
   background-color: var(--bg-color);
   max-width: 1600px;
   margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .servicesSection {
+    padding: 2rem;
+    height: 100vh;
+  }
 }
 
 .grid {

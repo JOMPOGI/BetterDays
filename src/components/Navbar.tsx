@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import styles from './Navbar.module.css';
 
 export function Navbar() {
   const [activeSection, setActiveSection] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -33,6 +35,7 @@ export function Navbar() {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+    setMobileMenuOpen(false); // Close menu on click
   };
 
   return (
@@ -42,7 +45,15 @@ export function Navbar() {
           <span className={styles.logoText}>BETTER DAYS STUDIOS</span>
         </div>
         
-        <nav className={styles.navLinks}>
+        {/* Mobile Menu Toggle */}
+        <button 
+          className={styles.mobileMenuBtn}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`${styles.navLinks} ${mobileMenuOpen ? styles.mobileOpen : ''}`}>
           <button 
             className={`${styles.navLink} ${activeSection === 'home' ? styles.active : ''}`}
             onClick={() => scrollToSection('home')}
