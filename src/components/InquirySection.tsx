@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { format } from 'date-fns';
+import { AnimatePresence } from 'framer-motion';
 import styles from './InquirySection.module.css';
 
 import { Step1Service, type Category } from './InquiryFlow/Step1Service';

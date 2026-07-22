@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { format } from 'date-fns';
+
 import styles from './InquiryPanel.module.css';
 
 import { Step1Service, type Category } from './InquiryFlow/Step1Service';

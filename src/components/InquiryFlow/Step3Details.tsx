@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
 import styles from './Step3Details.module.css';

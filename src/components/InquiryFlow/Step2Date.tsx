@@ -12,8 +12,7 @@ import {
   isSameMonth, 
   isSameDay, 
   isBefore, 
-  startOfDay,
-  parseISO
+  startOfDay
 } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './Step2Date.module.css';
@@ -39,7 +38,6 @@ export function Step2Date({
 }: Step2DateProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [availability, setAvailability] = useState<AvailabilityMap>({});
-  const [loading, setLoading] = useState(false);
   const [direction, setDirection] = useState(0);
 
   useEffect(() => {
@@ -47,7 +45,6 @@ export function Step2Date({
   }, [currentMonth]);
 
   const generateMockAvailability = () => {
-    setLoading(true);
     const newAvailability: AvailabilityMap = {};
     const startDate = startOfMonth(currentMonth);
     const endDate = endOfMonth(addMonths(currentMonth, 1));
@@ -71,7 +68,6 @@ export function Step2Date({
     }
     
     setAvailability(newAvailability);
-    setLoading(false);
   };
 
   const renderHeader = () => {
@@ -228,7 +224,7 @@ export function Step2Date({
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={1}
-              onDragEnd={(e, { offset, velocity }) => {
+              onDragEnd={(_e, { offset, velocity }) => {
                 const swipe = Math.abs(offset.x) * velocity.x;
                 if (swipe < -10000) {
                   nextMonth();
