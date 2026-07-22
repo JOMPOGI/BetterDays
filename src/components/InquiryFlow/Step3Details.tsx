@@ -104,7 +104,6 @@ export function Step3Details({
             name="social" 
             value={details.social} 
             onChange={handleChange}
-            placeholder="@instagram"
           />
         </div>
 
@@ -117,7 +116,7 @@ export function Step3Details({
             value={details.location} 
             onChange={handleChange}
             required
-            placeholder="Studio / Venue Address"
+            placeholder="Venue Address"
           />
         </div>
 
