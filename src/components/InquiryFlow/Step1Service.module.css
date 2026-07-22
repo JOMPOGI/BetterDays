@@ -1,0 +1,147 @@
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  width: 100%;
+}
+
+.splitLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .splitLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stepContainer h3 {
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  margin-bottom: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.tutorialBox {
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1.5rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.tutorialTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+}
+
+.tutorialList {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-color);
+  opacity: 0.9;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+.tutorialList li {
+  margin-bottom: 0.5rem;
+}
+
+.tutorialList li:last-child {
+  margin-bottom: 0;
+}
+
+.optionsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.serviceTypes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.optionBtn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  font-weight: 300;
+  width: 100%;
+  max-width: 400px;
+}
+
+.optionBtn:hover {
+  border-color: var(--text-color);
+  color: var(--text-color);
+  opacity: 1;
+}
+
+.optionBtn.selected {
+  background: var(--text-color);
+  color: var(--bg-color);
+  border-color: var(--text-color);
+  opacity: 1;
+  font-weight: 500;
+}
+
+.serviceTypes .optionBtn {
+  width: auto;
+  min-width: 150px;
+}
+
+.nextBtn {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: var(--text-color);
+  color: var(--bg-color);
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nextBtn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}

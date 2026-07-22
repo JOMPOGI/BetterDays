@@ -2,10 +2,9 @@ import { motion } from 'framer-motion';
 import styles from './Services.module.css';
 
 const services = [
-  { id: 'weddings', title: 'WEDDINGS', desc: 'Love, captured.', image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop' },
-  { id: 'celebrations', title: 'CELEBRATIONS', desc: 'Every moment, unforgettable.', image: 'https://images.unsplash.com/photo-1511556532299-8f662fc26c06?q=80&w=1000&auto=format&fit=crop' },
-  { id: 'commercial', title: 'COMMERCIAL', desc: 'Built to make an impression.', image: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=1000&auto=format&fit=crop' },
-  { id: 'portraits', title: 'PORTRAITS & STUDIO', desc: 'Your story, in focus.', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000&auto=format&fit=crop' },
+  { id: 'wedding', title: 'WEDDING', desc: 'Love, captured.', image: '/images/wedding.jpg' },
+  { id: 'birthday', title: 'BIRTHDAY', desc: 'Every moment, unforgettable.', image: '/images/wedding.jpg' },
+  { id: 'prenup', title: 'PRENUP', desc: 'The beginning of forever.', image: '/images/ring.jpg' },
 ];
 
 export function Services() {

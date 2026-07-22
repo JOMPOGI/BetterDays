@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 import styles from './VisualShowcase.module.css';
 
 const showcaseData = [
-  { text: "Stories worth remembering.", img: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=2000&auto=format&fit=crop" },
-  { text: "Made to be felt.", img: "https://images.unsplash.com/photo-1516280440544-712818cb4fb7?q=80&w=2000&auto=format&fit=crop" },
+  { text: "Stories worth remembering.", img: "/images/wedding.jpg" },
+  { text: "Made to be felt.", img: "/images/ring.jpg" },
   { text: "Every frame. Every feeling.", img: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2000&auto=format&fit=crop" },
 ];
 

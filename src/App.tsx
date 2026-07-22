@@ -2,24 +2,19 @@ import { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { LogoIntroAnimation } from './components/LogoIntroAnimation';
 import { Hero } from './components/Hero';
-import { Portfolio } from './components/Portfolio';
-import { VisualShowcase } from './components/VisualShowcase';
 import { Services } from './components/Services';
-import { InquiryPanel } from './components/InquiryPanel';
+import { Testimonials } from './components/Testimonials';
+import { InquirySection } from './components/InquirySection';
 import { Footer } from './components/Footer';
 
 function App() {
   const [introFinished, setIntroFinished] = useState(false);
-  const [inquiryOpen, setInquiryOpen] = useState(false);
 
   useEffect(() => {
-    // If returning visitor, maybe skip intro? 
-    // We handle this inside LogoIntroAnimation, but let's assume it finishes eventually.
-    // To prevent scrolling during intro:
     if (!introFinished) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = 'hidden'; // Let the .snap-container handle scrolling
     }
     
     return () => {
@@ -27,26 +22,34 @@ function App() {
     };
   }, [introFinished]);
 
-  const handleInquireClick = () => {
-    setInquiryOpen(true);
-  };
-
   return (
     <>
       {!introFinished && <LogoIntroAnimation onComplete={() => setIntroFinished(true)} />}
-      
       <Navbar />
       
-      <main style={{ opacity: introFinished ? 1 : 0, transition: 'opacity 1s ease' }}>
-        <Hero onInquireClick={handleInquireClick} />
-        <VisualShowcase />
-        <Services />
-        <Portfolio />
+      <main 
+        className="snap-container"
+        style={{ opacity: introFinished ? 1 : 0, transition: 'opacity 1s ease' }}
+      >
+        <section id="home" className="snap-section">
+          <Hero onInquireClick={() => document.getElementById('inquire')?.scrollIntoView({ behavior: 'smooth' })} />
+        </section>
+
+        <section id="services" className="snap-section">
+          <Services />
+        </section>
+
+        <section id="testimonials" className="snap-section">
+          <Testimonials />
+        </section>
+
+        <section id="inquire" className="snap-section" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <InquirySection />
+          </div>
+          <Footer />
+        </section>
       </main>
-      
-      <Footer />
-      
-      <InquiryPanel isOpen={inquiryOpen} onClose={() => setInquiryOpen(false)} />
     </>
   );
 }

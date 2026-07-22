@@ -1,55 +1,21 @@
 .introContainer {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   background-color: var(--bg-color);
-  color: var(--text-color);
-  z-index: 1000;
   display: flex;
-  align-items: center;
   justify-content: center;
-  pointer-events: none; /* Let clicks pass through as it fades */
-}
-
-.logoWrapper {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  z-index: 9999;
 }
 
-.svgLogo {
-  width: 120px;
-  height: 120px;
-  overflow: visible;
-}
-
-.wordmark {
-  text-align: center;
-}
-
-.betterDays {
-  font-size: 1.5rem;
-  font-weight: 400;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-}
-
-.studios {
-  font-size: 0.8rem;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  color: var(--text-color);
-  opacity: 0.7;
-  margin-top: 0.5rem;
-}
-
-@media (max-width: 768px) {
-  .svgLogo {
-    width: 90px;
-    height: 90px;
-  }
-  
-  .betterDays {
-    font-size: 1.2rem;
-  }
+.logo {
+  max-width: 300px;
+  width: 80%;
+  height: auto;
+  border-radius: 8px; /* Depending on logo shape */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }

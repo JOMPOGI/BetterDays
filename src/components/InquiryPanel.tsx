@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import { format } from 'date-fns';
 import styles from './InquiryPanel.module.css';
+
+import { Step1Service, type Category } from './InquiryFlow/Step1Service';
+import { Step2Date } from './InquiryFlow/Step2Date';
+import { Step3Details } from './InquiryFlow/Step3Details';
+import { Step4Success } from './InquiryFlow/Step4Success';
 
 interface InquiryPanelProps {
   isOpen: boolean;
@@ -9,16 +15,59 @@ interface InquiryPanelProps {
 }
 
 export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
-  const [submitted, setSubmitted] = useState(false);
+  const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate form submission
-    setSubmitted(true);
+  // Form State
+  const [category, setCategory] = useState<Category>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [details, setDetails] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    social: '',
+    location: '',
+    notes: ''
+  });
+
+  const handleClose = () => {
+    // Reset state after animation completes
     setTimeout(() => {
-      setSubmitted(false);
-      onClose();
-    }, 3000);
+      setStep(1);
+      setCategory(null);
+      setSelectedDate(null);
+      setDetails({ name: '', email: '', phone: '', social: '', location: '', notes: '' });
+      setErrorMsg('');
+    }, 500);
+    onClose();
+  };
+
+  const submitInquiry = async () => {
+    if (!selectedDate || !category) return;
+    
+    setIsSubmitting(true);
+    setErrorMsg('');
+
+    try {
+      // Simulate network request
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Simulate a random double booking error (10% chance) just to show it works
+      if (Math.random() < 0.1) {
+        setErrorMsg('Sorry, this date was just requested by another client. Please choose another available date.');
+        setStep(2); // Go back to calendar
+        return;
+      }
+
+      // Success
+      setStep(4);
+    } catch (err: any) {
+      console.error('Error submitting inquiry:', err);
+      setErrorMsg('An error occurred while submitting your inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -30,7 +79,7 @@ export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
           />
           <motion.div
             className={styles.panel}
@@ -41,72 +90,56 @@ export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
           >
             <div className={styles.header}>
               <h2>INQUIRE</h2>
-              <button onClick={onClose} className={styles.closeBtn} aria-label="Close inquiry panel">
+              <button onClick={handleClose} className={styles.closeBtn} aria-label="Close inquiry panel">
                 <X size={24} />
               </button>
             </div>
 
             <div className={styles.content}>
-              {submitted ? (
-                <div className={styles.successMessage}>
-                  <p>Thank you. We'll be in touch soon.</p>
+              {errorMsg && (
+                <div className={styles.errorMessage}>
+                  {errorMsg}
                 </div>
-              ) : (
-                <form onSubmit={handleSubmit} className={styles.form}>
-                  <div className={styles.field}>
-                    <label htmlFor="name">Full Name</label>
-                    <input type="text" id="name" required />
-                  </div>
-                  
-                  <div className={styles.field}>
-                    <label htmlFor="contact">Email Address / Phone Number</label>
-                    <input type="text" id="contact" required />
-                  </div>
-
-                  <div className={styles.field}>
-                    <label htmlFor="social">Social Handle (@Instagram / @TikTok)</label>
-                    <input type="text" id="social" />
-                  </div>
-
-                  <div className={styles.field}>
-                    <label htmlFor="date">Event / Shoot Date</label>
-                    <input type="date" id="date" />
-                  </div>
-
-                  <div className={styles.field}>
-                    <label htmlFor="location">Location / Venue Name</label>
-                    <input type="text" id="location" />
-                  </div>
-
-                  <div className={styles.field}>
-                    <label>Event Category</label>
-                    <div className={styles.radioGroup}>
-                      <label><input type="radio" name="category" value="Wedding" required /> Wedding</label>
-                      <label><input type="radio" name="category" value="Birthday" /> Birthday / Party</label>
-                      <label><input type="radio" name="category" value="Commercial" /> Commercial</label>
-                      <label><input type="radio" name="category" value="Studio" /> Studio</label>
-                    </div>
-                  </div>
-
-                  <div className={styles.field}>
-                    <label>Service Type</label>
-                    <div className={styles.radioGroup}>
-                      <label><input type="radio" name="service" value="Photography" required /> Photography</label>
-                      <label><input type="radio" name="service" value="Videography" /> Videography</label>
-                      <label><input type="radio" name="service" value="Both" /> Both</label>
-                    </div>
-                  </div>
-
-                  <div className={styles.field}>
-                    <label htmlFor="notes">Project Notes</label>
-                    <textarea id="notes" rows={3}></textarea>
-                  </div>
-
-                  <button type="submit" className={styles.submitBtn}>
-                    SEND INQUIRY
-                  </button>
-                </form>
               )}
+
+              <AnimatePresence mode="wait">
+                {step === 1 && (
+                  <Step1Service
+                    key="step1"
+                    category={category}
+                    setCategory={setCategory}
+                    onNext={() => setStep(2)}
+                  />
+                )}
+                {step === 2 && (
+                  <Step2Date
+                    key="step2"
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    onNext={() => setStep(3)}
+                    onBack={() => setStep(1)}
+                  />
+                )}
+                {step === 3 && (
+                  <Step3Details
+                    key="step3"
+                    details={details}
+                    setDetails={setDetails}
+                    onBack={() => setStep(2)}
+                    onSubmit={submitInquiry}
+                    isSubmitting={isSubmitting}
+                  />
+                )}
+                {step === 4 && (
+                  <Step4Success
+                    key="step4"
+                    category={category!}
+                    selectedDate={selectedDate!}
+                    location={details.location}
+                    onClose={handleClose}
+                  />
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </>

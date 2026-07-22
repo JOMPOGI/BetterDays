@@ -135,6 +135,17 @@
   letter-spacing: 0.05em;
 }
 
+.errorMessage {
+  background: rgba(255, 60, 60, 0.1);
+  border: 1px solid rgba(255, 60, 60, 0.3);
+  color: #ff8888;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .panel {
     width: 100%; /* Full screen on mobile */
