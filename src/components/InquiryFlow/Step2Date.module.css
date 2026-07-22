@@ -19,7 +19,8 @@
   top: 0;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-color);
+  opacity: 0.6;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -30,7 +31,7 @@
 }
 
 .backLink:hover {
-  color: #fff;
+  opacity: 1;
 }
 
 .titleArea h3 {
@@ -43,7 +44,8 @@
 
 .titleArea p {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-color);
+  opacity: 0.6;
   margin: 0;
 }
 
@@ -64,7 +66,7 @@
 .navBtn {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--text-color);
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
@@ -75,7 +77,7 @@
 }
 
 .navBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-color);
 }
 
 .monthLabel {
@@ -93,7 +95,8 @@
   text-align: center;
   font-size: 0.8rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-color);
+  opacity: 0.5;
   text-transform: uppercase;
 }
 
@@ -125,11 +128,11 @@
   border-radius: 50%;
   font-size: 0.95rem;
   transition: all 0.2s ease;
-  color: #fff;
+  color: var(--text-color);
 }
 
 .cell:not(.disabled):not(.selected):hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-color);
 }
 
 .cell.offMonth {
@@ -144,14 +147,15 @@
 }
 
 .cell.disabled {
-  color: rgba(255, 255, 255, 0.2);
+  color: var(--text-color);
+  opacity: 0.2;
   cursor: not-allowed;
   text-decoration: line-through;
 }
 
 .cell.selected {
-  background: #fff;
-  color: #000;
+  background: var(--text-color);
+  color: var(--bg-color);
   font-weight: 600;
 }
 
@@ -165,7 +169,7 @@
 }
 
 .cell.selected .pendingDot {
-  background-color: #000;
+  background-color: var(--bg-color);
 }
 
 .legend {
@@ -174,7 +178,8 @@
   gap: 1.5rem;
   margin-top: 1rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-color);
+  opacity: 0.6;
 }
 
 .legendItem {
@@ -190,7 +195,8 @@
 }
 
 .dotAvailable {
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--text-color);
+  opacity: 0.4;
 }
 
 .dotPending {
@@ -198,15 +204,16 @@
 }
 
 .dotBooked {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--text-color);
+  opacity: 0.2;
   text-decoration: line-through;
 }
 
 .nextBtn {
   margin-top: 1rem;
   padding: 1rem;
-  background: #fff;
-  color: #000;
+  background: var(--text-color);
+  color: var(--bg-color);
   border: none;
   border-radius: 4px;
   font-size: 1rem;

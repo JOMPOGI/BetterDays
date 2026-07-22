@@ -5,6 +5,11 @@
   --border-color: rgba(0, 0, 0, 0.1);
   --accent-color: #1a1a1a;
   --accent-hover: #333;
+  --input-bg: rgba(0, 0, 0, 0.05);
+  --input-bg-focus: rgba(0, 0, 0, 0.08);
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-border-focus: rgba(0, 0, 0, 0.5);
+  --input-placeholder: rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] {
@@ -14,6 +19,11 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --accent-color: #ffffff;
   --accent-hover: #cccccc;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-bg-focus: rgba(255, 255, 255, 0.08);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-border-focus: rgba(255, 255, 255, 0.5);
+  --input-placeholder: rgba(255, 255, 255, 0.3);
 }
 
 * {
