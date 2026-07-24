@@ -62,7 +62,7 @@ export function Step2Date({
 
     const newAvailability: AvailabilityMap = {};
     if (data) {
-      data.forEach(booking => {
+      data.forEach((booking: any) => {
         // If there's already a CONFIRMED or COMPLETED booking, keep it as BOOKED.
         // Otherwise, if it's PENDING, set it as PENDING.
         const existing = newAvailability[booking.event_date];

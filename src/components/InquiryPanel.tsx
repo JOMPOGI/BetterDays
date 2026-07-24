@@ -44,7 +44,7 @@ export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
     onClose();
   };
 
-  const submitInquiry = async (turnstileToken: string) => {
+  const submitInquiry = async (_turnstileToken: string) => {
     if (!selectedDate || !category) return;
     
     setIsSubmitting(true);
@@ -57,7 +57,7 @@ export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
         phone: details.phone,
         location: details.location,
         project_notes: details.notes,
-        service_type: category.type,
+        service_type: category,
         event_date: selectedDate.toISOString().split('T')[0],
         start_time: '09:00', // Default start time
         end_time: '18:00', // Default end time
