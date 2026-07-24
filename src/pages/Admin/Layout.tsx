@@ -6,7 +6,7 @@ export function AdminLayout() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    localStorage.removeItem('mock_admin_auth');
     navigate('/admin/login');
   };
 

@@ -15,16 +15,13 @@ export function Login() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
+    // Mock authentication
+    if (email === 'jombenitez96@gmail.com' && password === 'Fanny26!') {
+      localStorage.setItem('mock_admin_auth', 'true');
+      navigate('/admin');
+    } else {
       setError('Invalid login credentials');
       setLoading(false);
-    } else {
-      navigate('/admin');
     }
   };
 
