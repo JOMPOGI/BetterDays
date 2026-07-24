@@ -5,13 +5,13 @@
   flex-direction: column;
   background-color: var(--bg-color);
   padding: 1.5rem;
-  padding-top: 4rem; /* Ensure form is visible below navbar on mobile */
+  padding-top: 8rem; /* Ensure form is visible below navbar on mobile */
 }
 
 @media (min-width: 768px) {
   .sectionContainer {
     padding: 2rem;
-    padding-top: 2rem;
+    padding-top: 10rem;
     height: 100%;
     min-height: auto;
   }

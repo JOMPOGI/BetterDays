@@ -1,4 +1,4 @@
-import { Mail, Phone, Camera, MessageSquare } from 'lucide-react';
+import { Mail, Phone, Camera, MessageCircle } from 'lucide-react';
 import styles from './Footer.module.css';
 
 export function Footer() {
@@ -25,7 +25,7 @@ export function Footer() {
               <span>studiosbetterdays@gmail.com</span>
             </a>
             <a href="https://m.me/betterdaysstudios" target="_blank" rel="noopener noreferrer" className={styles.contactLink}>
-              <MessageSquare size={16} />
+              <MessageCircle size={16} />
               <span>Better Days Studios</span>
             </a>
           </div>
