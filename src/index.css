@@ -60,7 +60,8 @@ html, body {
   scroll-snap-align: start;
   scroll-snap-stop: always;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 a {
