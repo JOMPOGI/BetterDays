@@ -1,5 +1,5 @@
 .portfolioSection {
-  padding: 5rem 0; /* Full width for grid, padding on top/bottom */
+  padding: clamp(3rem, 8vh, 6rem) 0;
   background-color: var(--bg-color);
 }
 
@@ -62,17 +62,11 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 0 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 40vw, 300px), 1fr));
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+  padding: 0 clamp(0.5rem, 3vw, 2rem);
   max-width: 1600px;
   margin: 0 auto;
-}
-
-@media (min-width: 640px) {
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  }
 }
 
 .gridItem {

@@ -1,26 +1,19 @@
 .servicesSection {
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6rem 1.5rem 3rem;
+  padding: clamp(4rem, 10vh, 8rem) clamp(1.5rem, 5vw, 3rem) clamp(2rem, 5vh, 4rem);
   background-color: var(--bg-color);
   max-width: 1600px;
   margin: 0 auto;
 }
 
-@media (min-width: 768px) {
-  .servicesSection {
-    padding: 2rem;
-    height: 100vh;
-  }
-}
-
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
   width: 100%;
 }
 
@@ -78,9 +71,6 @@
 }
 
 @media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .imageContainer {
     aspect-ratio: 4/5;
   }
