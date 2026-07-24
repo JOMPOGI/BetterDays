@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../../lib/supabase';
 import { 
   format, 
   addMonths, 
@@ -41,30 +42,36 @@ export function Step2Date({
   const [direction, setDirection] = useState(0);
 
   useEffect(() => {
-    generateMockAvailability();
+    fetchAvailability();
   }, [currentMonth]);
 
-  const generateMockAvailability = () => {
-    const newAvailability: AvailabilityMap = {};
-    const startDate = startOfMonth(currentMonth);
-    const endDate = endOfMonth(addMonths(currentMonth, 1));
+  const fetchAvailability = async () => {
+    const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+    const endDate = format(endOfMonth(addMonths(currentMonth, 1)), 'yyyy-MM-dd');
     
-    let day = startDate;
-    // Generate some random bookings for the mock
-    // E.g., make weekends often booked, and randomly sprinkle PENDING
-    while (day <= endDate) {
-      const dateString = format(day, 'yyyy-MM-dd');
-      const random = Math.random();
+    // Call the secure RPC function instead of querying the table directly
+    const { data, error } = await supabase.rpc('get_public_availability', {
+      start_date: startDate,
+      end_date: endDate
+    });
       
-      // Let's make ~20% Booked, ~10% Pending
-      if (random < 0.2) {
-        newAvailability[dateString] = 'BOOKED';
-      } else if (random < 0.3) {
-        newAvailability[dateString] = 'PENDING';
-      } else {
-        newAvailability[dateString] = 'AVAILABLE';
-      }
-      day = addDays(day, 1);
+    if (error) {
+      console.error('Error fetching availability:', error);
+      return;
+    }
+
+    const newAvailability: AvailabilityMap = {};
+    if (data) {
+      data.forEach(booking => {
+        // If there's already a CONFIRMED or COMPLETED booking, keep it as BOOKED.
+        // Otherwise, if it's PENDING, set it as PENDING.
+        const existing = newAvailability[booking.event_date];
+        if (booking.status === 'CONFIRMED' || booking.status === 'COMPLETED') {
+          newAvailability[booking.event_date] = 'BOOKED';
+        } else if (booking.status === 'PENDING' && existing !== 'BOOKED') {
+          newAvailability[booking.event_date] = 'PENDING';
+        }
+      });
     }
     
     setAvailability(newAvailability);

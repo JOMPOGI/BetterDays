@@ -1,45 +1,74 @@
--- Supabase schema for Better Days Studios Inquiries
+-- SUPABASE SCHEMA FOR BETTER DAYS STUDIOS INQUIRIES & BOOKINGS
 
--- Create the inquiries table
-CREATE TABLE inquiries (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    client_name TEXT NOT NULL,
-    email TEXT,
-    phone TEXT,
-    social_handle TEXT,
-    location TEXT,
-    project_notes TEXT,
-    category TEXT NOT NULL, -- e.g., 'Wedding', 'Birthday', 'Commercial', 'Portrait', 'Studio'
-    service_type TEXT NOT NULL, -- e.g., 'Photography', 'Videography', 'Both'
-    event_date DATE NOT NULL,
-    status TEXT NOT NULL DEFAULT 'PENDING', -- 'AVAILABLE', 'PENDING', 'CONFIRMED', 'BOOKED', 'CANCELLED'
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. CREATE THE INQUIRIES TABLE
+CREATE TABLE IF NOT EXISTS INQUIRIES (
+    ID              UUID DEFAULT uuid_generate_v4() PRIMARY KEY
+,   CLIENT_NAME     TEXT NOT NULL
+,   EMAIL           TEXT
+,   PHONE           TEXT
+,   LOCATION        TEXT
+,   PROJECT_NOTES   TEXT
+,   SERVICE_TYPE    TEXT NOT NULL
+,   EVENT_DATE      DATE NOT NULL
+,   START_TIME      TIME NOT NULL
+,   END_TIME        TIME NOT NULL
+,   STATUS          TEXT NOT NULL DEFAULT 'PENDING'
+,   SOURCE          TEXT NOT NULL DEFAULT 'WEBSITE'
+,   ADMIN_NOTES     TEXT
+,   CREATED_AT      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+,   UPDATED_AT      TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable Row Level Security (RLS)
-ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
+-- 2. ENABLE ROW LEVEL SECURITY (RLS)
+ALTER TABLE INQUIRIES ENABLE ROW LEVEL SECURITY;
 
--- Allow anonymous read access (so the calendar can check availability)
--- Note: In a production app, you might want to restrict this to only return dates and statuses, not client info.
-CREATE POLICY "Allow public read access to status and dates" ON inquiries
-    FOR SELECT USING (true);
+-- 3. PUBLIC POLICIES
+-- ALLOW ANYONE TO SUBMIT A NEW INQUIRY (BUT STRICTLY RESTRICT WHAT THEY CAN INSERT)
+CREATE POLICY "ALLOW PUBLIC INSERT" ON INQUIRIES
+    FOR INSERT 
+    WITH CHECK (
+        STATUS = 'PENDING' 
+        AND SOURCE = 'WEBSITE' 
+        AND ADMIN_NOTES IS NULL
+    );
 
--- Allow anonymous insert access (so users can submit inquiries)
-CREATE POLICY "Allow anonymous insert" ON inquiries
-    FOR INSERT WITH CHECK (true);
+-- 4. ADMIN POLICIES
+-- ADMINS (AUTHENTICATED USERS) HAVE FULL ACCESS
+CREATE POLICY "ALLOW AUTHENTICATED READ" ON INQUIRIES
+    FOR SELECT
+    USING (auth.role() = 'authenticated');
 
--- Create a function to automatically update the updated_at column
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
+CREATE POLICY "ALLOW AUTHENTICATED UPDATE" ON INQUIRIES
+    FOR UPDATE
+    USING (auth.role() = 'authenticated');
 
--- Create a trigger to run the function before an update
-CREATE TRIGGER update_inquiries_updated_at
-    BEFORE UPDATE ON inquiries
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
+CREATE POLICY "ALLOW AUTHENTICATED DELETE" ON INQUIRIES
+    FOR DELETE
+    USING (auth.role() = 'authenticated');
+
+CREATE POLICY "ALLOW AUTHENTICATED INSERT" ON INQUIRIES
+    FOR INSERT
+    WITH CHECK (auth.role() = 'authenticated');
+
+-- 5. SECURE FUNCTION FOR PUBLIC AVAILABILITY
+-- THIS FUNCTION RUNS AS THE DATABASE OWNER (SECURITY DEFINER), BYPASSING RLS,
+-- BUT IT ONLY RETURNS THE EVENT_DATE AND STATUS COLUMNS, KEEPING ALL CLIENT DATA SECURE.
+CREATE OR REPLACE FUNCTION GET_PUBLIC_AVAILABILITY(START_DATE DATE, END_DATE DATE)
+RETURNS TABLE (
+    EVENT_DATE DATE
+,   STATUS TEXT
+) 
+LANGUAGE SQL SECURITY DEFINER SET search_path = public
+AS $$
+  SELECT 
+      EVENT_DATE
+  ,   STATUS 
+  FROM 
+      INQUIRIES
+  WHERE 
+      EVENT_DATE >= START_DATE 
+      AND EVENT_DATE <= END_DATE
+      AND STATUS IN ('PENDING', 'CONFIRMED', 'COMPLETED');
+$$;

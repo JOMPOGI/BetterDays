@@ -1,0 +1,170 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.monthNav h2 {
+  font-size: 1.75rem;
+  font-weight: 300;
+  min-width: 200px;
+  text-align: center;
+}
+
+.iconBtn {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  background: var(--accent-color);
+  color: var(--bg-color);
+}
+
+.addBtn {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  padding: 0.75rem 1.25rem;
+  border-radius: 4px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.addBtn:hover {
+  opacity: 0.9;
+}
+
+.calendar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .weekdays {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.weekday {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+}
+
+.day, .emptyDay {
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem;
+}
+
+.day:nth-child(7n), .emptyDay:nth-child(7n) {
+  border-right: none;
+}
+
+.dayNumber {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.today .dayNumber {
+  background: var(--accent-color);
+  color: var(--bg-color);
+  opacity: 1;
+}
+
+.dayBookings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bookingBadge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  font-weight: 500;
+}
+
+.bookingBadge:hover {
+  opacity: 0.8;
+}
+
+.pending {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+  border-left: 2px solid #eab308;
+}
+
+.confirmed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border-left: 2px solid #22c55e;
+}
+
+.completed {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border-left: 2px solid #3b82f6;
+}
+
+.cancelled {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  text-decoration: line-through;
+  opacity: 0.6;
+}

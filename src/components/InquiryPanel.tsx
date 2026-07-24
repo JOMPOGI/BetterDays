@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 import { X } from 'lucide-react';
 
 import styles from './InquiryPanel.module.css';
@@ -43,24 +44,33 @@ export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
     onClose();
   };
 
-  const submitInquiry = async () => {
+  const submitInquiry = async (turnstileToken: string) => {
     if (!selectedDate || !category) return;
     
     setIsSubmitting(true);
     setErrorMsg('');
 
     try {
-      // Simulate network request
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const { error } = await supabase.from('inquiries').insert([{
+        client_name: details.name,
+        email: details.email,
+        phone: details.phone,
+        location: details.location,
+        project_notes: details.notes,
+        service_type: category.type,
+        event_date: selectedDate.toISOString().split('T')[0],
+        start_time: '09:00', // Default start time
+        end_time: '18:00', // Default end time
+        status: 'PENDING',
+        source: 'WEBSITE'
+      }]);
 
-      // Simulate a random double booking error (10% chance) just to show it works
-      if (Math.random() < 0.1) {
-        setErrorMsg('Sorry, this date was just requested by another client. Please choose another available date.');
-        setStep(2); // Go back to calendar
+      if (error) {
+        console.error('Supabase error:', error);
+        setErrorMsg('An error occurred while submitting your inquiry. Please try again.');
         return;
       }
 
-      // Success
       setStep(4);
     } catch (err: any) {
       console.error('Error submitting inquiry:', err);

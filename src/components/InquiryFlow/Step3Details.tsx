@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { ChevronLeft } from 'lucide-react';
+import { Turnstile } from '@marsidev/react-turnstile';
+import { useState } from 'react';
 import styles from './Step3Details.module.css';
 
 interface UserDetails {
@@ -15,7 +17,7 @@ interface Step3DetailsProps {
   details: UserDetails;
   setDetails: (d: UserDetails) => void;
   onBack: () => void;
-  onSubmit: () => void;
+  onSubmit: (turnstileToken: string) => void;
   isSubmitting: boolean;
 }
 
@@ -26,6 +28,7 @@ export function Step3Details({
   onSubmit,
   isSubmitting
 }: Step3DetailsProps) {
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -53,7 +56,7 @@ export function Step3Details({
         className={styles.form} 
         onSubmit={(e) => {
           e.preventDefault();
-          if (isFormValid) onSubmit();
+          if (isFormValid && turnstileToken) onSubmit(turnstileToken);
         }}
       >
         <div className={styles.field}>
@@ -132,10 +135,17 @@ export function Step3Details({
           ></textarea>
         </div>
 
+        <div style={{ margin: '1rem 0', display: 'flex', justifyContent: 'center' }}>
+          <Turnstile 
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'} 
+            onSuccess={setTurnstileToken}
+          />
+        </div>
+
         <button 
           type="submit" 
           className={styles.submitBtn}
-          disabled={!isFormValid || isSubmitting}
+          disabled={!isFormValid || !turnstileToken || isSubmitting}
         >
           {isSubmitting ? 'SENDING...' : 'SEND INQUIRY'}
         </button>

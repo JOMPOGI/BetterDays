@@ -1,4 +1,10 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Login } from './pages/Admin/Login';
+import { AdminLayout } from './pages/Admin/Layout';
+import { Overview } from './pages/Admin/Overview';
+import { Calendar } from './pages/Admin/Calendar';
+import { ProtectedRoute } from './components/Admin/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { LogoIntroAnimation } from './components/LogoIntroAnimation';
 import { Hero } from './components/Hero';
@@ -7,7 +13,7 @@ import { Testimonials } from './components/Testimonials';
 import { InquirySection } from './components/InquirySection';
 import { Footer } from './components/Footer';
 
-function App() {
+function PublicSite() {
   const [introFinished, setIntroFinished] = useState(false);
 
   useEffect(() => {
@@ -52,6 +58,25 @@ function App() {
         </section>
       </main>
     </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PublicSite />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<Login />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin" element={<Overview />} />
+            <Route path="/admin/calendar" element={<Calendar />} />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

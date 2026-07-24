@@ -1,0 +1,49 @@
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import styles from './Layout.module.css';
+
+export function AdminLayout() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin/login');
+  };
+
+  return (
+    <div className={styles.adminContainer}>
+      <aside className={styles.sidebar}>
+        <div className={styles.brand}>
+          <h2>BETTER DAYS STUDIOS</h2>
+          <span>Admin</span>
+        </div>
+
+        <nav className={styles.nav}>
+          <NavLink 
+            to="/admin" 
+            end
+            className={({ isActive }) => isActive ? `${styles.navItem} ${styles.active}` : styles.navItem}
+          >
+            Overview
+          </NavLink>
+          <NavLink 
+            to="/admin/calendar" 
+            className={({ isActive }) => isActive ? `${styles.navItem} ${styles.active}` : styles.navItem}
+          >
+            Calendar
+          </NavLink>
+        </nav>
+
+        <div className={styles.bottomNav}>
+          <button onClick={handleLogout} className={styles.logoutBtn}>
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      <main className={styles.mainContent}>
+        <Outlet />
+      </main>
+    </div>
+  );
+}
