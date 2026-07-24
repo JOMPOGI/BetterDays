@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './LogoIntroAnimation.module.css';
 
 interface LogoIntroAnimationProps {
@@ -7,14 +7,28 @@ interface LogoIntroAnimationProps {
 }
 
 export function LogoIntroAnimation({ onComplete }: LogoIntroAnimationProps) {
+  const [shouldRender, setShouldRender] = useState(true);
+
   useEffect(() => {
-    // Show logo for 2 seconds then fade out
-    const timer = setTimeout(() => {
+    const visited = sessionStorage.getItem('introVisited');
+    if (visited) {
+      setShouldRender(false);
       onComplete();
-    }, 2000);
+      return;
+    }
+
+    sessionStorage.setItem('introVisited', 'true');
+
+    // Show logo for 2.5 seconds then fade out
+    const timer = setTimeout(() => {
+      setShouldRender(false);
+      onComplete();
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
+
+  if (!shouldRender) return null;
 
   return (
     <motion.div
@@ -28,9 +42,9 @@ export function LogoIntroAnimation({ onComplete }: LogoIntroAnimationProps) {
         src="/images/logo.jpg" 
         alt="Better Days Studios" 
         className={styles.logo}
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        initial={{ scale: 1.1, opacity: 0, filter: "blur(12px)" }}
+        animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
       />
     </motion.div>
   );
