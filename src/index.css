@@ -55,12 +55,11 @@ html, body {
 }
 
 .snap-section {
-  height: 100dvh;
+  min-height: 100dvh;
   width: 100%;
   scroll-snap-align: start;
   scroll-snap-stop: always;
   position: relative;
-  overflow-y: auto;
   overflow-x: hidden;
 }
 
