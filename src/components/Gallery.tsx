@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 import { MediaLightbox } from './MediaLightbox';
-import styles from './Portfolio.module.css';
+import styles from './Gallery.module.css';
 
 const categories = ['ALL', 'WEDDINGS / PRENUPS', 'BIRTHDAYS & DEBUTS', 'CORPORATE EVENTS', 'WEDDING', 'PORTRAIT', 'COMMERCIAL'];
 
-export function Portfolio() {
+export function Gallery() {
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [selectedMedia, setSelectedMedia] = useState<{ id: number; category: string; image: string } | null>(null);
   const [portfolioItems, setPortfolioItems] = useState<any[]>([]);

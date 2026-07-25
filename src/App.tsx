@@ -11,7 +11,7 @@ import { ProtectedRoute } from './components/Admin/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { LogoIntroAnimation } from './components/LogoIntroAnimation';
 import { Hero } from './components/Hero';
-import { Services } from './components/Services';
+import { Gallery } from './components/Gallery';
 import { Testimonials } from './components/Testimonials';
 import { InquirySection } from './components/InquirySection';
 import { Footer } from './components/Footer';
@@ -41,11 +41,14 @@ function PublicSite() {
         style={{ opacity: introFinished ? 1 : 0, transition: 'opacity 1s ease' }}
       >
         <section id="home" className="snap-section">
-          <Hero onInquireClick={() => document.getElementById('inquire')?.scrollIntoView({ behavior: 'smooth' })} />
+          <Hero 
+            onInquireClick={() => document.getElementById('inquire')?.scrollIntoView({ behavior: 'smooth' })} 
+            onGalleryClick={() => document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth' })}
+          />
         </section>
 
-        <section id="services" className="snap-section">
-          <Services />
+        <section id="gallery" className="snap-section">
+          <Gallery />
         </section>
 
         <section id="testimonials" className="snap-section">
@@ -78,7 +81,6 @@ function App() {
             <Route path="/admin/calendar" element={<Calendar />} />
             <Route path="/admin/inquiries" element={<Inquiries />} />
             <Route path="/admin/clients" element={<Clients />} />
-            <Route path="/admin/notifications" element={<Notifications />} />
           </Route>
         </Route>
       </Routes>

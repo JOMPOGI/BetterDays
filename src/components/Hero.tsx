@@ -3,9 +3,10 @@ import styles from './Hero.module.css';
 
 interface HeroProps {
   onInquireClick: () => void;
+  onGalleryClick: () => void;
 }
 
-export function Hero({ onInquireClick }: HeroProps) {
+export function Hero({ onInquireClick, onGalleryClick }: HeroProps) {
   return (
     <section className={styles.hero}>
       <div className={styles.videoContainer}>
@@ -38,6 +39,18 @@ export function Hero({ onInquireClick }: HeroProps) {
           whileTap={{ scale: 0.95 }}
         >
           [ INQUIRE NOW ]
+        </motion.button>
+        <motion.button
+          onClick={onGalleryClick}
+          className={`${styles.ctaButton} ${styles.secondary}`}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.2)' }}
+          whileTap={{ scale: 0.95 }}
+          style={{ marginLeft: '1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.5)' }}
+        >
+          [ VIEW GALLERY ]
         </motion.button>
       </div>
     </section>
