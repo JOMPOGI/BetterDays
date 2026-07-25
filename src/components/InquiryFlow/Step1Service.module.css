@@ -1,140 +1,173 @@
 .stepContainer {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 4rem;
   width: 100%;
 }
 
-.splitLayout {
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.howItWorksWrapper {
+  width: 100%;
+}
+
+.stepsGrid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-  align-items: flex-start;
 }
 
 @media (min-width: 768px) {
-  .splitLayout {
-    grid-template-columns: 1fr 1fr;
+  .stepsGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.optionsContainer {
+.stepCard {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+}
+
+.stepNumber {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--text-color);
+  opacity: 0.5;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stepCard h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stepCard p {
+  font-size: 0.95rem;
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+.selectionWrapper {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.stepContainer h3 {
-  font-size: 1.5rem;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  margin-bottom: 0;
-  text-align: center;
-  text-transform: uppercase;
+.cardsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
 
-.tutorialBox {
-  background: var(--bg-color);
+@media (min-width: 768px) {
+  .cardsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.selectionCard {
+  background: var(--input-bg);
   border: 1px solid var(--border-color);
-  border-radius: 4px;
-  padding: 1.5rem;
+  border-radius: 8px;
+  padding: 2rem 1.5rem;
   text-align: left;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-}
-
-.tutorialTitle {
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--text-color);
-  margin-bottom: 1.5rem;
-  margin-top: 0;
-}
-
-.tutorialList {
-  margin: 0;
-  padding-left: 1.5rem;
-  color: var(--text-color);
-  opacity: 0.9;
-  font-size: 1.05rem;
-  line-height: 1.8;
-  font-weight: 400;
-}
-
-.tutorialList li {
-  margin-bottom: 0.5rem;
-}
-
-.tutorialList li:last-child {
-  margin-bottom: 0;
-}
-
-.optionsGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-}
-
-.serviceTypes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.optionBtn {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  padding: 1rem 2rem;
-  color: var(--text-color);
-  opacity: 0.7;
-  font-size: 1rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  font-family: inherit;
-  font-weight: 300;
-  width: 100%;
-  max-width: 400px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.optionBtn:hover {
-  border-color: var(--text-color);
-  color: var(--text-color);
-  opacity: 1;
+.selectionCard:hover {
+  background: var(--input-bg-focus);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
-.optionBtn.selected {
+.selectionCard.selected {
   background: var(--text-color);
   color: var(--bg-color);
   border-color: var(--text-color);
-  opacity: 1;
-  font-weight: 500;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
-.serviceTypes .optionBtn {
-  width: auto;
-  min-width: 150px;
+.selectionCard h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.selectionCard p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.otherInputWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.otherInputWrapper label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.otherInput {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-color);
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.otherInput:focus {
+  background: var(--input-bg-focus);
+  border-color: var(--input-border-focus);
 }
 
 .nextBtn {
-  margin-top: 1rem;
+  margin-top: 2rem;
   padding: 1.25rem;
   background: var(--text-color);
   color: var(--bg-color);
   border: none;
-  font-size: 0.9rem;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   width: 100%;
   max-width: 400px;
   margin-left: auto;
@@ -142,6 +175,12 @@
 }
 
 .nextBtn:disabled {
-  opacity: 0.2;
+  opacity: 0.3;
   cursor: not-allowed;
+  transform: none;
+}
+
+.nextBtn:not(:disabled):hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
 }

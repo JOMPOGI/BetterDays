@@ -50,7 +50,7 @@ export function InquirySection() {
         event_date: selectedDate.toISOString().split('T')[0],
         start_time: '09:00', // Default start time
         end_time: '18:00', // Default end time
-        status: 'PENDING',
+        status: 'NEW',
         source: 'WEBSITE'
       }]);
 
