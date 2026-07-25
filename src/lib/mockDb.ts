@@ -3,7 +3,7 @@ const STORAGE_KEY = 'better_days_mock_db';
 const getDb = () => {
   const data = localStorage.getItem(STORAGE_KEY);
   if (data) return JSON.parse(data);
-  return { inquiries: [] };
+  return { inquiries: [], portfolio: [] };
 };
 
 const saveDb = (data: any) => {

@@ -1,26 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 import { MediaLightbox } from './MediaLightbox';
 import styles from './Portfolio.module.css';
 
-const categories = ['ALL', 'WEDDINGS / PRENUPS', 'BIRTHDAYS & DEBUTS', 'CORPORATE EVENTS'];
-
-const portfolioItems = [
-  { id: 1, category: 'WEDDINGS / PRENUPS', image: '/images/wedding.jpg' },
-  { id: 2, category: 'CORPORATE EVENTS', image: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=1000&auto=format&fit=crop' },
-  { id: 3, category: 'BIRTHDAYS & DEBUTS', image: 'https://images.unsplash.com/photo-1530103862676-de8892437659?q=80&w=1000&auto=format&fit=crop' },
-  { id: 4, category: 'WEDDINGS / PRENUPS', image: '/images/ring.jpg' },
-  { id: 5, category: 'BIRTHDAYS & DEBUTS', image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?q=80&w=1000&auto=format&fit=crop' },
-  { id: 6, category: 'CORPORATE EVENTS', image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1000&auto=format&fit=crop' },
-];
+const categories = ['ALL', 'WEDDINGS / PRENUPS', 'BIRTHDAYS & DEBUTS', 'CORPORATE EVENTS', 'WEDDING', 'PORTRAIT', 'COMMERCIAL'];
 
 export function Portfolio() {
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [selectedMedia, setSelectedMedia] = useState<{ id: number; category: string; image: string } | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchPortfolio();
+  }, []);
+
+  const fetchPortfolio = async () => {
+    const { data } = await supabase.from('portfolio').select('*');
+    if (data && data.length > 0) {
+      const mapped = data.map((item: any) => ({
+        id: item.id,
+        category: item.category.toUpperCase(),
+        image: item.url
+      }));
+      setPortfolioItems(mapped);
+    } else {
+      // Fallback dummy data if nothing is in the db
+      setPortfolioItems([
+        { id: 1, category: 'WEDDING', image: '/images/wedding.jpg' },
+        { id: 2, category: 'COMMERCIAL', image: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=1000&auto=format&fit=crop' },
+        { id: 3, category: 'PORTRAIT', image: 'https://images.unsplash.com/photo-1530103862676-de8892437659?q=80&w=1000&auto=format&fit=crop' },
+        { id: 4, category: 'WEDDING', image: '/images/ring.jpg' }
+      ]);
+    }
+  };
 
   const filteredItems = activeCategory === 'ALL' 
     ? portfolioItems 
-    : portfolioItems.filter(item => item.category === activeCategory);
+    : portfolioItems.filter(item => item.category === activeCategory || item.category === activeCategory.replace('S', ''));
 
   return (
     <>
