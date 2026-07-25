@@ -3,7 +3,6 @@ import styles from './Services.module.css';
 
 const services = [
   { id: 'wedding', title: 'WEDDING', desc: 'Love, captured.', image: '/images/wedding.jpg' },
-  { id: 'birthday', title: 'BIRTHDAY', desc: 'Every moment, unforgettable.', image: '/images/wedding.jpg' },
   { id: 'prenup', title: 'PRENUP', desc: 'The beginning of forever.', image: '/images/ring.jpg' },
 ];
 

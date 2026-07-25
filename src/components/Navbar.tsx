@@ -64,7 +64,7 @@ export function Navbar() {
             className={`${styles.navLink} ${activeSection === 'services' ? styles.active : ''}`}
             onClick={() => scrollToSection('services')}
           >
-            SERVICES
+            GALLERY
           </button>
           <button 
             className={`${styles.navLink} ${activeSection === 'testimonials' ? styles.active : ''}`}
