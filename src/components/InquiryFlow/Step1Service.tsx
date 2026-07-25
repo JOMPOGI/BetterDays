@@ -58,17 +58,17 @@ export function Step1Service({
             <div className={styles.stepCard}>
               <span className={styles.stepNumber}>01</span>
               <h4>CHECK YOUR DATE</h4>
-              <p>Select your preferred date and check our availability for your wedding or pre-wedding session.</p>
+              <p>Choose your preferred date and check availability.</p>
             </div>
             <div className={styles.stepCard}>
               <span className={styles.stepNumber}>02</span>
               <h4>SHARE YOUR PLANS</h4>
-              <p>Complete our inquiry form with your event details, date, location, and photography or videography requirements.</p>
+              <p>Tell us about your event, date, location, and requirements.</p>
             </div>
             <div className={styles.stepCard}>
               <span className={styles.stepNumber}>03</span>
               <h4>LET'S CONNECT</h4>
-              <p>Submit your inquiry and our team will be in touch to discuss your vision, answer your questions, and guide you through the next steps.</p>
+              <p>Submit your inquiry and we'll be in touch to discuss the details.</p>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ export function Step1Service({
               </div>
               <div className={styles.cardContent}>
                 <h4>WEDDING</h4>
-                <p>Capture the meaningful moments of your wedding day through timeless photography and cinematic films.</p>
+                <p>Capture the moments that make your special day unforgettable.</p>
               </div>
             </button>
             
@@ -98,7 +98,7 @@ export function Step1Service({
               </div>
               <div className={styles.cardContent}>
                 <h4>PRENUP / PRE-WEDDING</h4>
-                <p>Tell your story before the big day with a personalised session that reflects your unique connection.</p>
+                <p>Celebrate your story with a session that reflects your unique connection.</p>
               </div>
             </button>
             
@@ -111,7 +111,7 @@ export function Step1Service({
               </div>
               <div className={styles.cardContent}>
                 <h4>OTHER EVENT</h4>
-                <p>Planning something beyond a wedding or prenup? Select this option and tell us a little about your event.</p>
+                <p>Planning something else? Tell us about your event.</p>
               </div>
             </button>
           </div>
