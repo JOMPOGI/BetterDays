@@ -211,7 +211,7 @@ export function BookingDetailsDrawer({ bookingId, onClose }: BookingDetailsDrawe
                         title="Open in Google Maps"
                       >
                         <Navigation size={18} />
-                        Drive
+                        View in Maps
                       </a>
                     )}
                   </div>

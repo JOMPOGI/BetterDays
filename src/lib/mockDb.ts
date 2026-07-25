@@ -1,35 +1,70 @@
-const STORAGE_KEY = 'better_days_mock_db';
+const STORAGE_KEY = 'better_days_mock_db_v3';
 
 const getDb = () => {
   const data = localStorage.getItem(STORAGE_KEY);
   if (data) {
     const parsed = JSON.parse(data);
-    // If it's an old DB format (e.g. no clients array), force reseed
-    if (parsed.clients) return parsed;
+    return parsed;
   }
   
-  const clientId = crypto.randomUUID();
-  const inquiryId1 = crypto.randomUUID();
-  const inquiryId2 = crypto.randomUUID();
   const adminId = crypto.randomUUID();
   
+  // Generate 10 mock clients
+  const mockClients = Array.from({ length: 10 }).map((_, i) => ({
+    id: crypto.randomUUID(),
+    full_name: `Client ${i + 1}`,
+    email: `client${i + 1}@example.com`,
+    phone: `555-010${i}`,
+    created_at: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
+    updated_at: new Date().toISOString()
+  }));
+
+  // Generate 10 mock inquiries/bookings
+  const eventTypes = ['WEDDING', 'PRENUP'];
+  const locations = ['Grand Hotel', 'Studio A', 'Beach Resort', 'City Hall', 'Botanical Gardens', 'Downtown Studio'];
+  const statuses = ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
+
+  const mockInquiries = mockClients.map((client, i) => {
+    return {
+      id: crypto.randomUUID(),
+      client_id: client.id,
+      event_type: eventTypes[i % eventTypes.length],
+      event_date: new Date(Date.now() + (i * 86400000 * 3)).toISOString().split('T')[0],
+      start_time: '10:00',
+      end_time: '14:00',
+      location: locations[i % locations.length],
+      project_notes: `Looking forward to our ${eventTypes[i % eventTypes.length].toLowerCase()} shoot.`,
+      status: statuses[i % statuses.length],
+      source: 'WEBSITE',
+      is_read: i % 2 === 0,
+      is_archived: i === 9,
+      is_deleted: false,
+      created_at: new Date(Date.now() - Math.random() * 1000000000).toISOString(),
+      updated_at: new Date().toISOString()
+    };
+  });
+
+  const mockBookings = mockInquiries
+    .filter(inq => ['CONFIRMED', 'COMPLETED'].includes(inq.status))
+    .map(inq => ({
+      id: crypto.randomUUID(),
+      inquiry_id: inq.id,
+      client_id: inq.client_id,
+      event_date: inq.event_date,
+      start_time: inq.start_time,
+      end_time: inq.end_time,
+      location: inq.location,
+      status: inq.status,
+      created_at: inq.created_at,
+      updated_at: inq.updated_at
+    }));
+  
   const seed = { 
-    clients: [
-      { id: clientId, full_name: 'Jane Doe', email: 'jane@example.com', phone: '123-456-7890', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-    ], 
-    inquiries: [
-      { id: inquiryId1, client_id: clientId, event_type: 'WEDDING', event_date: '2026-08-15', start_time: '14:00', end_time: '22:00', location: 'Grand Hotel', project_notes: 'Looking for a cinematic video.', status: 'PENDING', source: 'WEBSITE', is_read: false, is_archived: false, is_deleted: false, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-      { id: inquiryId2, client_id: clientId, event_type: 'PORTRAIT', event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', project_notes: 'Family portraits.', status: 'CONFIRMED', source: 'WEBSITE', is_read: true, is_archived: false, is_deleted: false, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-    ], 
-    bookings: [
-      { id: crypto.randomUUID(), inquiry_id: inquiryId2, client_id: clientId, event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', status: 'CONFIRMED', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-    ], 
-    admin_notes: [
-      { id: crypto.randomUUID(), inquiry_id: inquiryId1, admin_id: adminId, note: 'Follow up next week about the wedding package.', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-    ], 
-    notifications: [
-      { id: crypto.randomUUID(), type: 'NEW_INQUIRY', title: 'New Inquiry', message: 'Jane Doe submitted a new inquiry for a WEDDING.', is_read: false, admin_id: adminId, created_at: new Date().toISOString() }
-    ],
+    clients: mockClients, 
+    inquiries: mockInquiries, 
+    bookings: mockBookings, 
+    admin_notes: [], 
+    notifications: [],
     portfolio: [] 
   };
   

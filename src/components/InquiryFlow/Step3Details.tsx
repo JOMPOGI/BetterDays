@@ -119,7 +119,7 @@ export function Step3Details({
             value={details.location} 
             onChange={handleChange}
             required
-            placeholder="Venue Address"
+            placeholder="e.g., Full Address or Google Maps Pin Link"
           />
         </div>
 
