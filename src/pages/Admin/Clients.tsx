@@ -23,40 +23,40 @@ export function Clients() {
 
   const fetchClients = async () => {
     setLoading(true);
-    // In a real app, this would be a specialized RPC or a complex query.
-    // For our mock, we'll fetch all inquiries and aggregate them by email.
-    const { data, error } = await supabase.from('inquiries').select('*');
+    const { data: clientsData, error: clientsError } = await supabase.from('clients').select('*');
+    const { data: bookingsData } = await supabase.from('bookings').select('*');
     
-    if (error) {
-      console.error(error);
+    if (clientsError) {
+      console.error(clientsError);
       setLoading(false);
       return;
     }
 
-    const clientMap = new Map<string, Client>();
-
-    (data || []).forEach((booking: any) => {
-      const email = booking.email || 'No Email Provided';
-      if (!clientMap.has(email)) {
-        clientMap.set(email, {
-          email,
-          name: booking.client_name,
-          phone: booking.phone || '-',
-          total_bookings: 1,
-          last_booking: booking.event_date,
-          status: booking.status
-        });
-      } else {
-        const existing = clientMap.get(email)!;
-        existing.total_bookings += 1;
-        if (new Date(booking.event_date) > new Date(existing.last_booking)) {
-          existing.last_booking = booking.event_date;
-          existing.status = booking.status;
-        }
+    const formattedClients = (clientsData || []).map((client: any) => {
+      const clientBookings = (bookingsData || []).filter((b: any) => b.client_id === client.id);
+      
+      const total_bookings = clientBookings.length;
+      let last_booking = '-';
+      let status = '-';
+      
+      if (total_bookings > 0) {
+        // Sort to get latest
+        clientBookings.sort((a: any, b: any) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime());
+        last_booking = clientBookings[0].event_date;
+        status = clientBookings[0].status;
       }
+
+      return {
+        email: client.email || 'No Email',
+        name: client.full_name,
+        phone: client.phone || '-',
+        total_bookings,
+        last_booking,
+        status
+      };
     });
 
-    setClients(Array.from(clientMap.values()));
+    setClients(formattedClients);
     setLoading(false);
   };
 

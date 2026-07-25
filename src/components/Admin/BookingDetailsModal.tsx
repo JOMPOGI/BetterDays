@@ -27,7 +27,7 @@ export function BookingDetailsModal({ bookingId, onClose }: BookingDetailsModalP
   const fetchBookingDetails = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from('inquiries')
+      .from('bookings')
       .select('*')
       .eq('id', bookingId)
       .single();
@@ -57,7 +57,7 @@ export function BookingDetailsModal({ bookingId, onClose }: BookingDetailsModalP
     if (booking.status === 'CONFIRMED') {
       // Check for conflicts if confirming
       const { data: conflicts, error: conflictError } = await supabase
-        .from('inquiries')
+        .from('bookings')
         .select('id')
         .eq('event_date', booking.event_date)
         .eq('status', 'CONFIRMED')
@@ -79,9 +79,13 @@ export function BookingDetailsModal({ bookingId, onClose }: BookingDetailsModalP
     if (bookingId) {
       // Update existing
       const { error } = await supabase
-        .from('inquiries')
+        .from('bookings')
         .update({
-          ...booking,
+          status: booking.status,
+          event_date: booking.event_date,
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+          location: booking.location,
           updated_at: new Date().toISOString()
         })
         .eq('id', bookingId);
@@ -94,9 +98,15 @@ export function BookingDetailsModal({ bookingId, onClose }: BookingDetailsModalP
     } else {
       // Create new
       const { error } = await supabase
-        .from('inquiries')
+        .from('bookings')
         .insert([{
-          ...booking,
+          id: crypto.randomUUID(),
+          client_id: '00000000-0000-0000-0000-000000000000', // Mock hardcoded client
+          event_date: booking.event_date,
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+          location: booking.location,
+          status: booking.status,
           updated_at: new Date().toISOString(),
           created_at: new Date().toISOString(),
         }]);
@@ -115,7 +125,7 @@ export function BookingDetailsModal({ bookingId, onClose }: BookingDetailsModalP
     
     setSaving(true);
     const { error } = await supabase
-      .from('inquiries')
+      .from('bookings')
       .delete()
       .eq('id', bookingId);
       

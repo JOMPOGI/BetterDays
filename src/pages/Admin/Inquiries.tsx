@@ -4,16 +4,20 @@ import { supabase } from '../../lib/supabase';
 import styles from './Inquiries.module.css';
 import { format } from 'date-fns';
 
-export interface Inquiry {
+export interface Client {
   id: string;
-  client_name: string;
+  full_name: string;
   email: string | null;
   phone: string | null;
-  location: string | null;
-  project_notes: string | null;
-  service_type: string;
+}
+
+export interface Inquiry {
+  id: string;
+  client_id: string;
+  client?: Client;
+  event_type: string;
   event_date: string;
-  status: 'NEW' | 'CONTACTED' | 'PENDING' | 'CONFIRMED' | 'DECLINED' | 'ARCHIVED';
+  status: 'PENDING' | 'CONTACTED' | 'QUOTED' | 'CONFIRMED' | 'COMPLETED' | 'DECLINED' | 'CANCELLED' | 'SPAM';
   created_at: string;
 }
 
@@ -24,22 +28,42 @@ export function Inquiries() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchInquiries();
+    fetchData();
   }, []);
 
-  const fetchInquiries = async () => {
+  const fetchData = async () => {
     setLoading(true);
-    const { data, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-    if (!error && data) {
-      setInquiries(data);
+    const { data: clientsData } = await supabase.from('clients').select('*');
+    const { data: inquiriesData, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
+    
+    if (!error && inquiriesData) {
+      const merged = inquiriesData.map((inq: any) => ({
+        ...inq,
+        client: clientsData?.find((c: any) => c.id === inq.client_id)
+      }));
+      setInquiries(merged);
     }
     setLoading(false);
   };
 
-  const handleStatusChange = async (id: string, newStatus: string) => {
-    const { error } = await supabase.from('inquiries').update({ status: newStatus }).eq('id', id);
+  const handleStatusChange = async (inquiry: Inquiry, newStatus: string) => {
+    const { error } = await supabase.from('inquiries').update({ status: newStatus }).eq('id', inquiry.id);
+    
     if (!error) {
-      fetchInquiries(); // reload to reflect changes
+      if (newStatus === 'CONFIRMED') {
+        // Create booking
+        await supabase.from('bookings').insert({
+          id: crypto.randomUUID(),
+          inquiry_id: inquiry.id,
+          client_id: inquiry.client_id,
+          event_date: inquiry.event_date,
+          start_time: (inquiry as any).start_time || '09:00',
+          end_time: (inquiry as any).end_time || '18:00',
+          location: (inquiry as any).location,
+          status: 'CONFIRMED'
+        });
+      }
+      fetchData(); // reload to reflect changes
     }
   };
 
@@ -54,14 +78,14 @@ export function Inquiries() {
       </button>
       <div className={styles.header}>
         <div>
-          <h1>Inquiries Inbox</h1>
-          <p>Manage incoming requests and convert them to bookings.</p>
+          <h1>Inquiries Management</h1>
+          <p>Review incoming requests and manage their lifecycle.</p>
         </div>
       </div>
 
       <div className={styles.toolbar}>
         <div className={styles.filters}>
-          {['ALL', 'NEW', 'CONTACTED', 'PENDING', 'CONFIRMED', 'DECLINED'].map(f => (
+          {['ALL', 'PENDING', 'CONTACTED', 'QUOTED', 'CONFIRMED', 'COMPLETED', 'DECLINED', 'CANCELLED', 'SPAM'].map(f => (
             <button 
               key={f}
               className={`${styles.filterBtn} ${filter === f ? styles.active : ''}`}
@@ -95,11 +119,11 @@ export function Inquiries() {
                 <tr key={inq.id}>
                   <td>{format(new Date(inq.created_at || new Date()), 'MMM d, yyyy')}</td>
                   <td>
-                    <strong>{inq.client_name}</strong>
+                    <strong>{inq.client?.full_name || 'Unknown Client'}</strong>
                     <br/>
-                    <span className={styles.subtext}>{inq.email}</span>
+                    <span className={styles.subtext}>{inq.client?.email || ''}</span>
                   </td>
-                  <td>{inq.service_type}</td>
+                  <td>{inq.event_type}</td>
                   <td>{format(new Date(inq.event_date), 'MMM d, yyyy')}</td>
                   <td>
                     <span className={`${styles.badge} ${styles[inq.status.toLowerCase()]}`}>
@@ -110,14 +134,16 @@ export function Inquiries() {
                     <select 
                       className={styles.statusSelect}
                       value={inq.status}
-                      onChange={(e) => handleStatusChange(inq.id, e.target.value)}
+                      onChange={(e) => handleStatusChange(inq, e.target.value)}
                     >
-                      <option value="NEW">New</option>
-                      <option value="CONTACTED">Contacted</option>
                       <option value="PENDING">Pending</option>
+                      <option value="CONTACTED">Contacted</option>
+                      <option value="QUOTED">Quoted</option>
                       <option value="CONFIRMED">Convert to Booking (Confirmed)</option>
-                      <option value="DECLINED">Decline</option>
-                      <option value="ARCHIVED">Archive</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="DECLINED">Declined</option>
+                      <option value="CANCELLED">Cancelled</option>
+                      <option value="SPAM">Spam</option>
                     </select>
                   </td>
                 </tr>

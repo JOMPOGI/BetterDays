@@ -59,16 +59,25 @@ export function Calendar() {
     const start = format(startOfMonth(date), 'yyyy-MM-dd');
     const end = format(endOfMonth(date), 'yyyy-MM-dd');
 
-    const { data, error } = await supabase
-      .from('inquiries')
+    const { data: bookingsData, error } = await supabase
+      .from('bookings')
       .select('*')
       .gte('event_date', start)
       .lte('event_date', end);
 
+    const { data: clientsData } = await supabase.from('clients').select('*');
+
     if (error) {
       console.error('Error fetching bookings:', error);
-    } else {
-      setBookings(data as Booking[] || []);
+    } else if (bookingsData) {
+      const merged = bookingsData.map((b: any) => {
+        const client = clientsData?.find((c: any) => c.id === b.client_id);
+        return {
+          ...b,
+          client_name: client ? client.full_name : 'Unknown Client'
+        };
+      });
+      setBookings(merged as Booking[]);
     }
     setLoading(false);
   };
