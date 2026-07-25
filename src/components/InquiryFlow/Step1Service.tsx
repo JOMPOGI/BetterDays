@@ -51,74 +51,91 @@ export function Step1Service({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <div className={styles.howItWorksWrapper}>
-        <h2 className={styles.sectionTitle}>HOW IT WORKS</h2>
-        <div className={styles.stepsGrid}>
-          <div className={styles.stepCard}>
-            <span className={styles.stepNumber}>01</span>
-            <h4>CHECK YOUR DATE</h4>
-            <p>Select your preferred date and check our availability for your wedding or pre-wedding session.</p>
-          </div>
-          <div className={styles.stepCard}>
-            <span className={styles.stepNumber}>02</span>
-            <h4>SHARE YOUR PLANS</h4>
-            <p>Complete our inquiry form with your event details, date, location, and photography or videography requirements.</p>
-          </div>
-          <div className={styles.stepCard}>
-            <span className={styles.stepNumber}>03</span>
-            <h4>LET'S CONNECT</h4>
-            <p>Submit your inquiry and our team will be in touch to discuss your vision, answer your questions, and guide you through the next steps.</p>
+      <div className={styles.splitLayout}>
+        <div className={styles.howItWorksWrapper}>
+          <h2 className={styles.sectionTitle}>HOW IT WORKS</h2>
+          <div className={styles.stepsGrid}>
+            <div className={styles.stepCard}>
+              <span className={styles.stepNumber}>01</span>
+              <h4>CHECK YOUR DATE</h4>
+              <p>Select your preferred date and check our availability for your wedding or pre-wedding session.</p>
+            </div>
+            <div className={styles.stepCard}>
+              <span className={styles.stepNumber}>02</span>
+              <h4>SHARE YOUR PLANS</h4>
+              <p>Complete our inquiry form with your event details, date, location, and photography or videography requirements.</p>
+            </div>
+            <div className={styles.stepCard}>
+              <span className={styles.stepNumber}>03</span>
+              <h4>LET'S CONNECT</h4>
+              <p>Submit your inquiry and our team will be in touch to discuss your vision, answer your questions, and guide you through the next steps.</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className={styles.selectionWrapper}>
-        <h3 className={styles.sectionTitle}>WHAT ARE YOU LOOKING FOR?</h3>
-        <div className={styles.cardsGrid}>
-          <button
-            className={`${styles.selectionCard} ${selectedMain === 'Wedding' ? styles.selected : ''}`}
-            onClick={() => handleSelect('Wedding')}
-          >
-            <h4>WEDDING</h4>
-            <p>Capture the meaningful moments of your wedding day through timeless photography and cinematic films.</p>
-          </button>
-          
-          <button
-            className={`${styles.selectionCard} ${selectedMain === 'Prenup / Pre-Wedding' ? styles.selected : ''}`}
-            onClick={() => handleSelect('Prenup / Pre-Wedding')}
-          >
-            <h4>PRENUP / PRE-WEDDING</h4>
-            <p>Tell your story before the big day with a personalised session that reflects your unique connection.</p>
-          </button>
-          
-          <button
-            className={`${styles.selectionCard} ${selectedMain === 'Other Event' ? styles.selected : ''}`}
-            onClick={() => handleSelect('Other Event')}
-          >
-            <h4>OTHER EVENT</h4>
-            <p>Planning something beyond a wedding or prenup? Select this option and tell us a little about your event.</p>
-          </button>
-        </div>
-
-        <AnimatePresence>
-          {selectedMain === 'Other Event' && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className={styles.otherInputWrapper}
+        <div className={styles.selectionWrapper}>
+          <h3 className={styles.sectionTitle}>WHAT ARE YOU LOOKING FOR?</h3>
+          <div className={styles.cardsGrid}>
+            <button
+              className={`${styles.selectionCard} ${selectedMain === 'Wedding' ? styles.selected : ''}`}
+              onClick={() => handleSelect('Wedding')}
             >
-              <label>What type of event are you planning?</label>
-              <input
-                type="text"
-                placeholder="e.g. Birthday, Debut, Corporate Event, Baptism, or Other"
-                value={otherText}
-                onChange={handleOtherChange}
-                className={styles.otherInput}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className={styles.radioCircle}>
+                <div className={styles.radioInner}></div>
+              </div>
+              <div className={styles.cardContent}>
+                <h4>WEDDING</h4>
+                <p>Capture the meaningful moments of your wedding day through timeless photography and cinematic films.</p>
+              </div>
+            </button>
+            
+            <button
+              className={`${styles.selectionCard} ${selectedMain === 'Prenup / Pre-Wedding' ? styles.selected : ''}`}
+              onClick={() => handleSelect('Prenup / Pre-Wedding')}
+            >
+              <div className={styles.radioCircle}>
+                <div className={styles.radioInner}></div>
+              </div>
+              <div className={styles.cardContent}>
+                <h4>PRENUP / PRE-WEDDING</h4>
+                <p>Tell your story before the big day with a personalised session that reflects your unique connection.</p>
+              </div>
+            </button>
+            
+            <button
+              className={`${styles.selectionCard} ${selectedMain === 'Other Event' ? styles.selected : ''}`}
+              onClick={() => handleSelect('Other Event')}
+            >
+              <div className={styles.radioCircle}>
+                <div className={styles.radioInner}></div>
+              </div>
+              <div className={styles.cardContent}>
+                <h4>OTHER EVENT</h4>
+                <p>Planning something beyond a wedding or prenup? Select this option and tell us a little about your event.</p>
+              </div>
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {selectedMain === 'Other Event' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className={styles.otherInputWrapper}
+              >
+                <label>What type of event are you planning?</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Birthday, Debut, Corporate Event, Baptism, or Other"
+                  value={otherText}
+                  onChange={handleOtherChange}
+                  className={styles.otherInput}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       <button 

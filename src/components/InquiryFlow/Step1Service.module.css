@@ -184,3 +184,63 @@
   opacity: 0.9;
   transform: translateY(-2px);
 }
+
+.splitLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+@media (min-width: 1024px) {
+  .splitLayout {
+    flex-direction: row;
+    gap: 4rem;
+  }
+  .howItWorksWrapper {
+    flex: 1;
+  }
+  .selectionWrapper {
+    flex: 1;
+  }
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+.selectionCard {
+  flex-direction: row;
+  align-items: center;
+  padding: 1.5rem;
+}
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.radioCircle {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.radioInner {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+.selectionCard:hover .radioCircle {
+  border-color: var(--text-color);
+}
+.selectionCard.selected .radioCircle {
+  border-color: var(--bg-color);
+}
+.selectionCard.selected .radioInner {
+  background: var(--bg-color);
+}

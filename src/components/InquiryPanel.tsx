@@ -51,19 +51,17 @@ export function InquiryPanel({ isOpen, onClose }: InquiryPanelProps) {
     setErrorMsg('');
 
     try {
-      const { error } = await supabase.from('inquiries').insert([{
-        client_name: details.name,
-        email: details.email,
-        phone: details.phone,
-        location: details.location,
-        project_notes: details.notes,
-        service_type: category,
-        event_date: selectedDate.toISOString().split('T')[0],
-        start_time: '09:00', // Default start time
-        end_time: '18:00', // Default end time
-        status: 'PENDING',
-        source: 'WEBSITE'
-      }]);
+      const { error } = await supabase.rpc('submit_inquiry', {
+        p_name: details.name,
+        p_email: details.email,
+        p_phone: details.phone,
+        p_location: details.location,
+        p_notes: details.notes,
+        p_event_type: category,
+        p_event_date: selectedDate.toISOString().split('T')[0],
+        p_start_time: '09:00', // Default start time
+        p_end_time: '18:00', // Default end time
+      });
 
       if (error) {
         console.error('Supabase error:', error);
