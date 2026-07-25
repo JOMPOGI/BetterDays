@@ -7,8 +7,6 @@ const getDb = () => {
     return parsed;
   }
   
-  const adminId = crypto.randomUUID();
-  
   // Generate 10 mock clients
   const mockClients = Array.from({ length: 10 }).map((_, i) => ({
     id: crypto.randomUUID(),
