@@ -68,11 +68,19 @@ export function Inquiries() {
     }
   };
 
-  const filteredInquiries = inquiries.filter(i => {
-    if (currentFolder === 'ARCHIVED') return i.is_archived && !i.is_deleted;
-    if (currentFolder === 'TRASH') return i.is_deleted;
-    return !i.is_archived && !i.is_deleted;
-  });
+  const filteredInquiries = inquiries
+    .filter(i => {
+      if (currentFolder === 'ARCHIVED') return i.is_archived && !i.is_deleted;
+      if (currentFolder === 'TRASH') return i.is_deleted;
+      return !i.is_archived && !i.is_deleted;
+    })
+    .sort((a, b) => {
+      const dateDiff = new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+      if (dateDiff !== 0) return dateDiff;
+      const typeA = (a.event_type || '').toLowerCase();
+      const typeB = (b.event_type || '').toLowerCase();
+      return typeA.localeCompare(typeB);
+    });
 
   const getUnreadCount = () => inquiries.filter(i => !i.is_read && !i.is_archived && !i.is_deleted).length;
 

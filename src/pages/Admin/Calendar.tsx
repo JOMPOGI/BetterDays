@@ -52,18 +52,20 @@ export function Calendar() {
 
   const fetchBookings = async () => {
     setLoading(true);
-    // Fetch all future/recent bookings for list + calendar
     const { data: bookingsData, error } = await supabase.from('bookings').select('*');
     const { data: clientsData } = await supabase.from('clients').select('*');
+    const { data: inquiriesData } = await supabase.from('inquiries').select('*');
 
     if (error) {
       console.error('Error fetching bookings:', error);
     } else if (bookingsData) {
       const merged = bookingsData.map((b: any) => {
         const client = clientsData?.find((c: any) => c.id === b.client_id);
+        const inquiry = inquiriesData?.find((i: any) => i.id === b.inquiry_id);
         return {
           ...b,
-          client_name: client ? client.full_name : 'Unknown Client'
+          client_name: client ? client.full_name : 'Unknown Client',
+          service_type: inquiry ? inquiry.event_type : 'Event'
         };
       });
       setBookings(merged as Booking[]);
@@ -84,13 +86,25 @@ export function Calendar() {
 
   const getBookingsForDay = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
-    return bookings.filter(b => b.event_date === dateStr);
+    return bookings
+      .filter(b => b.event_date === dateStr)
+      .sort((a, b) => {
+        const typeA = (a.service_type || '').toLowerCase();
+        const typeB = (b.service_type || '').toLowerCase();
+        return typeA.localeCompare(typeB);
+      });
   };
 
   // Chronological upcoming events list
   const upcomingEvents = bookings
     .filter(b => b.status !== 'CANCELLED' && new Date(b.event_date) >= new Date(new Date().setHours(0,0,0,0)))
-    .sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime());
+    .sort((a, b) => {
+      const dateDiff = new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
+      if (dateDiff !== 0) return dateDiff;
+      const typeA = (a.service_type || '').toLowerCase();
+      const typeB = (b.service_type || '').toLowerCase();
+      return typeA.localeCompare(typeB);
+    });
 
   const openNewBooking = () => {
     setSelectedBookingId(null);
