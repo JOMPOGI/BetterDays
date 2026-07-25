@@ -18,8 +18,8 @@ const getDb = () => {
       { id: clientId, full_name: 'Jane Doe', email: 'jane@example.com', phone: '123-456-7890', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
     ], 
     inquiries: [
-      { id: inquiryId1, client_id: clientId, event_type: 'WEDDING', event_date: '2026-08-15', start_time: '14:00', end_time: '22:00', location: 'Grand Hotel', project_notes: 'Looking for a cinematic video.', status: 'PENDING', source: 'WEBSITE', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-      { id: inquiryId2, client_id: clientId, event_type: 'PORTRAIT', event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', project_notes: 'Family portraits.', status: 'CONFIRMED', source: 'WEBSITE', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+      { id: inquiryId1, client_id: clientId, event_type: 'WEDDING', event_date: '2026-08-15', start_time: '14:00', end_time: '22:00', location: 'Grand Hotel', project_notes: 'Looking for a cinematic video.', status: 'PENDING', source: 'WEBSITE', is_read: false, is_archived: false, is_deleted: false, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+      { id: inquiryId2, client_id: clientId, event_type: 'PORTRAIT', event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', project_notes: 'Family portraits.', status: 'CONFIRMED', source: 'WEBSITE', is_read: true, is_archived: false, is_deleted: false, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
     ], 
     bookings: [
       { id: crypto.randomUUID(), inquiry_id: inquiryId2, client_id: clientId, event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', status: 'CONFIRMED', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
@@ -283,8 +283,11 @@ export const mockSupabase = {
         end_time: params.p_end_time,
         location: params.p_location,
         project_notes: params.p_notes,
-        status: 'PENDING',
+        status: 'NEW',
         source: 'WEBSITE',
+        is_read: false,
+        is_archived: false,
+        is_deleted: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
