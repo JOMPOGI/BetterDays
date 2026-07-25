@@ -78,7 +78,6 @@ function App() {
             <Route path="/admin/calendar" element={<Calendar />} />
             <Route path="/admin/inquiries" element={<Inquiries />} />
             <Route path="/admin/clients" element={<Clients />} />
-            <Route path="/admin/notifications" element={<Notifications />} />
           </Route>
         </Route>
       </Routes>
