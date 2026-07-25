@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login } from './pages/Admin/Login';
 import { AdminLayout } from './pages/Admin/Layout';
 import { Inquiries } from './pages/Admin/Inquiries';
-import { Notifications } from './pages/Admin/Notifications';
+
 import { Calendar } from './pages/Admin/Calendar';
 import { Clients } from './pages/Admin/Clients';
 import { Home } from './pages/Admin/Home';
