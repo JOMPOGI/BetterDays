@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'better_days_mock_db_v4';
+const STORAGE_KEY = 'better_days_mock_db_v5';
 
 const getDb = () => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -35,7 +35,7 @@ const getDb = () => {
   // Generate 10 mock inquiries/bookings
   const eventTypes = ['WEDDING', 'PRENUP'];
   const locations = realVenues;
-  const statuses = ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
+  const statuses = ['CONFIRMED', 'COMPLETED', 'CANCELLED'];
 
   const mockInquiries = mockClients.map((client, i) => {
     return {

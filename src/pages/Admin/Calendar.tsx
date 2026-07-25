@@ -10,9 +10,37 @@ import {
   addMonths,
   subMonths
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, MapPin, Square } from 'lucide-react';
 import { BookingDetailsDrawer } from '../../components/Admin/BookingDetailsDrawer';
 import styles from './Calendar.module.css';
+
+const PH_HOLIDAYS_2026: Record<string, string> = {
+  '2026-01-01': "New Year's Day",
+  '2026-02-17': "Chinese New Year",
+  '2026-02-25': "EDSA Revolution",
+  '2026-04-02': "Maundy Thursday",
+  '2026-04-03': "Good Friday",
+  '2026-04-04': "Black Saturday",
+  '2026-04-09': "Araw ng Kagitingan",
+  '2026-05-01': "Labor Day",
+  '2026-06-12': "Independence Day",
+  '2026-08-21': "Ninoy Aquino Day",
+  '2026-08-31': "National Heroes Day",
+  '2026-11-01': "All Saints' Day",
+  '2026-11-02': "All Souls' Day",
+  '2026-11-30': "Bonifacio Day",
+  '2026-12-08': "Immaculate Conception",
+  '2026-12-24': "Christmas Eve",
+  '2026-12-25': "Christmas Day",
+  '2026-12-30': "Rizal Day",
+  '2026-12-31': "Last Day of the Year"
+};
+
+const getStatusLabel = (status: string) => {
+  if (status === 'CONFIRMED') return 'Upcoming/Booked';
+  if (status === 'COMPLETED') return 'Event Done';
+  return status;
+};
 
 export interface Booking {
   id: string;
@@ -87,7 +115,7 @@ export function Calendar() {
   const getBookingsForDay = (date: Date) => {
     const dateStr = format(date, 'yyyy-MM-dd');
     return bookings
-      .filter(b => b.event_date === dateStr)
+      .filter(b => b.event_date === dateStr && b.status !== 'CANCELLED')
       .sort((a, b) => {
         const typeA = (a.service_type || '').toLowerCase();
         const typeB = (b.service_type || '').toLowerCase();
@@ -150,6 +178,12 @@ export function Calendar() {
               <button onClick={nextMonth} className={styles.iconBtn}><ChevronRight /></button>
             </div>
           </div>
+          
+          <div className={styles.legend}>
+            <div className={styles.legendItem}><Square size={12} className={styles.legendConfirmed} fill="currentColor" /> Upcoming/Booked</div>
+            <div className={styles.legendItem}><Square size={12} className={styles.legendCompleted} fill="currentColor" /> Event Done</div>
+            <div className={styles.legendItem}><Square size={12} className={styles.legendHoliday} fill="currentColor" /> Holiday</div>
+          </div>
 
           <div className={styles.calendar}>
             <div className={styles.weekdays}>
@@ -164,7 +198,10 @@ export function Calendar() {
               ))}
               
               {daysInMonth.map(day => {
+                const dayStr = format(day, 'yyyy-MM-dd');
                 const dayBookings = getBookingsForDay(day);
+                const holiday = PH_HOLIDAYS_2026[dayStr];
+                
                 return (
                   <div 
                     key={day.toISOString()} 
@@ -173,6 +210,11 @@ export function Calendar() {
                     <div className={styles.dayNumber}>{format(day, 'd')}</div>
                     
                     <div className={styles.dayBookings}>
+                      {holiday && (
+                        <div className={`${styles.bookingBadge} ${styles.holiday}`}>
+                          {holiday}
+                        </div>
+                      )}
                       {dayBookings.map(b => (
                         <div 
                           key={b.id} 
@@ -206,7 +248,7 @@ export function Calendar() {
                   <div className={styles.eventCardHeader}>
                     <h4>{event.client_name}</h4>
                     <span className={`${styles.statusBadge} ${styles[event.status.toLowerCase()]}`}>
-                      {event.status}
+                      {getStatusLabel(event.status)}
                     </span>
                   </div>
                   <div className={styles.eventCardBody}>
