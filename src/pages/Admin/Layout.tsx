@@ -1,6 +1,8 @@
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { ThemeToggle } from '../../components/ThemeToggle';
+import { CalendarDays, Users, Inbox, LogOut } from 'lucide-react';
 import styles from './Layout.module.css';
+
 export function AdminLayout() {
   const navigate = useNavigate();
 
@@ -11,21 +13,48 @@ export function AdminLayout() {
 
   return (
     <div className={styles.adminContainer}>
-      <header className={styles.navbar}>
-        <div className={styles.brand} onClick={() => navigate('/admin')}>
-          <h2>BETTER DAYS STUDIOS</h2>
-          <span>Admin</span>
+      <aside className={styles.sidebar}>
+        <div className={styles.brand}>
+          <h2>BETTER DAYS</h2>
+          <span>Studio CRM</span>
         </div>
 
-        <div className={styles.navActions}>
+        <nav className={styles.navMenu}>
+          <NavLink 
+            to="/admin/schedule" 
+            className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+          >
+            <CalendarDays size={20} />
+            Schedule & Bookings
+          </NavLink>
+          
+          <NavLink 
+            to="/admin/clients" 
+            className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+          >
+            <Users size={20} />
+            Client Directory
+          </NavLink>
+          
+          <NavLink 
+            to="/admin/inquiries" 
+            className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+          >
+            <Inbox size={20} />
+            Inquiries
+          </NavLink>
+        </nav>
+
+        <div className={styles.navFooter}>
           <div className={styles.themeToggleWrapper}>
             <ThemeToggle />
           </div>
           <button onClick={handleLogout} className={styles.logoutBtn}>
+            <LogOut size={20} />
             Log Out
           </button>
         </div>
-      </header>
+      </aside>
 
       <main className={styles.mainContent}>
         <Outlet />
