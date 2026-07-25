@@ -1,6 +1,6 @@
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 import { ThemeToggle } from '../../components/ThemeToggle';
-import { CalendarDays, Users, Inbox, LogOut } from 'lucide-react';
+import { CalendarDays, Users, Inbox, LogOut, Camera } from 'lucide-react';
 import styles from './Layout.module.css';
 
 export function AdminLayout() {
@@ -15,8 +15,8 @@ export function AdminLayout() {
     <div className={styles.adminContainer}>
       <aside className={styles.sidebar}>
         <div className={styles.brand}>
-          <h2>BETTER DAYS</h2>
-          <span>Studio CRM</span>
+          <Camera size={36} className={styles.brandLogo} />
+          <span className={styles.brandText}>ADMIN</span>
         </div>
 
         <nav className={styles.navMenu}>
@@ -47,11 +47,11 @@ export function AdminLayout() {
 
         <div className={styles.navFooter}>
           <div className={styles.themeToggleWrapper}>
-            <ThemeToggle />
+            <ThemeToggle variant="sidebar" />
           </div>
           <button onClick={handleLogout} className={styles.logoutBtn}>
             <LogOut size={20} />
-            Log Out
+            LOG OUT
           </button>
         </div>
       </aside>

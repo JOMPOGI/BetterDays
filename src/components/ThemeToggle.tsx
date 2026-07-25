@@ -2,7 +2,11 @@ import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import styles from './ThemeToggle.module.css';
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  variant?: 'icon' | 'sidebar';
+}
+
+export function ThemeToggle({ variant = 'icon' }: ThemeToggleProps = {}) {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
@@ -31,10 +35,11 @@ export function ThemeToggle() {
   return (
     <button 
       onClick={toggleTheme} 
-      className={styles.toggleBtn}
+      className={variant === 'sidebar' ? styles.sidebarBtn : styles.toggleBtn}
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+      {variant === 'sidebar' && <span>{theme === 'dark' ? 'LIGHT MODE' : 'DARK MODE'}</span>}
     </button>
   );
 }
