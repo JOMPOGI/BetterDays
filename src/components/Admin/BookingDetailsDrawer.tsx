@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { X, Calendar as CalendarIcon, User, Clock, MapPin, Tag } from 'lucide-react';
+import { X, Calendar as CalendarIcon, User, Clock, MapPin, Tag, Navigation } from 'lucide-react';
 import styles from './BookingDetailsDrawer.module.css';
 
 interface BookingDetailsDrawerProps {
@@ -197,9 +197,23 @@ export function BookingDetailsDrawer({ bookingId, onClose }: BookingDetailsDrawe
                 </div>
                 <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
                   <label>Location</label>
-                  <div className={styles.inputIconWrapper}>
-                    <MapPin size={16} />
-                    <input name="location" value={booking.location || ''} onChange={handleBookingChange} />
+                  <div className={styles.locationWrapper}>
+                    <div className={styles.inputIconWrapper}>
+                      <MapPin size={16} />
+                      <input name="location" value={booking.location || ''} onChange={handleBookingChange} />
+                    </div>
+                    {booking.location && (
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(booking.location)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={styles.navigateBtn}
+                        title="Open in Google Maps"
+                      >
+                        <Navigation size={18} />
+                        Drive
+                      </a>
+                    )}
                   </div>
                 </div>
                 <div className={`${styles.inputGroup} ${styles.fullWidth}`}>
