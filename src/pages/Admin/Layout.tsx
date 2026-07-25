@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
-import { ThemeToggle } from '../../components/ThemeToggle';
+
 import { CalendarDays, Users, Inbox, LogOut, Camera } from 'lucide-react';
 import styles from './Layout.module.css';
 
@@ -46,9 +46,7 @@ export function AdminLayout() {
         </nav>
 
         <div className={styles.navFooter}>
-          <div className={styles.themeToggleWrapper}>
-            <ThemeToggle variant="sidebar" />
-          </div>
+
           <button onClick={handleLogout} className={styles.logoutBtn}>
             <LogOut size={20} />
             LOG OUT

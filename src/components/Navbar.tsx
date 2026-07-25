@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
+
 import styles from './Navbar.module.css';
 
 export function Navbar() {
@@ -81,7 +81,6 @@ export function Navbar() {
         </nav>
 
         <div className={styles.rightAction}>
-          <ThemeToggle />
         </div>
       </div>
     </header>
