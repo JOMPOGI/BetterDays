@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'better_days_mock_db_v3';
+const STORAGE_KEY = 'better_days_mock_db_v4';
 
 const getDb = () => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -7,19 +7,34 @@ const getDb = () => {
     return parsed;
   }
   
+  const realNames = [
+    'Isabella Rossi', 'Liam O\'Connor', 'Sophia Chen', 'Mateo Silva', 'Olivia Dubois',
+    'Benjamin Cruz', 'Amelia Tanaka', 'Lucas Navarro', 'Mia Santos', 'Ethan Wright'
+  ];
+
+  const realVenues = [
+    'Palacio de Memoria', 'The Peninsula Manila', 'Fernwood Gardens', 'Antonio\'s Tagaytay', 
+    'Las Casas Filipinas de Acuzar', 'Pinto Art Museum', 'Marriott Hotel Manila', 
+    'Angelfields Nature Sanctuary', 'Manila Cathedral', 'San Agustin Church'
+  ];
+
   // Generate 10 mock clients
-  const mockClients = Array.from({ length: 10 }).map((_, i) => ({
-    id: crypto.randomUUID(),
-    full_name: `Client ${i + 1}`,
-    email: `client${i + 1}@example.com`,
-    phone: `555-010${i}`,
-    created_at: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
-    updated_at: new Date().toISOString()
-  }));
+  const mockClients = Array.from({ length: 10 }).map((_, i) => {
+    const nameStr = realNames[i];
+    const emailPrefix = nameStr.toLowerCase().replace(' ', '.').replace('\'', '');
+    return {
+      id: crypto.randomUUID(),
+      full_name: nameStr,
+      email: `${emailPrefix}@example.com`,
+      phone: `+63 9${Math.floor(100000000 + Math.random() * 900000000)}`,
+      created_at: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
+      updated_at: new Date().toISOString()
+    };
+  });
 
   // Generate 10 mock inquiries/bookings
   const eventTypes = ['WEDDING', 'PRENUP'];
-  const locations = ['Grand Hotel', 'Studio A', 'Beach Resort', 'City Hall', 'Botanical Gardens', 'Downtown Studio'];
+  const locations = realVenues;
   const statuses = ['PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'];
 
   const mockInquiries = mockClients.map((client, i) => {
