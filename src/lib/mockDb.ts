@@ -2,8 +2,39 @@ const STORAGE_KEY = 'better_days_mock_db';
 
 const getDb = () => {
   const data = localStorage.getItem(STORAGE_KEY);
-  if (data) return JSON.parse(data);
-  return { inquiries: [], portfolio: [], notifications: [] };
+  if (data) {
+    const parsed = JSON.parse(data);
+    // If it's an old DB format (e.g. no clients array), force reseed
+    if (parsed.clients) return parsed;
+  }
+  
+  const clientId = crypto.randomUUID();
+  const inquiryId1 = crypto.randomUUID();
+  const inquiryId2 = crypto.randomUUID();
+  const adminId = crypto.randomUUID();
+  
+  const seed = { 
+    clients: [
+      { id: clientId, full_name: 'Jane Doe', email: 'jane@example.com', phone: '123-456-7890', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    ], 
+    inquiries: [
+      { id: inquiryId1, client_id: clientId, event_type: 'WEDDING', event_date: '2026-08-15', start_time: '14:00', end_time: '22:00', location: 'Grand Hotel', project_notes: 'Looking for a cinematic video.', status: 'PENDING', source: 'WEBSITE', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+      { id: inquiryId2, client_id: clientId, event_type: 'PORTRAIT', event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', project_notes: 'Family portraits.', status: 'CONFIRMED', source: 'WEBSITE', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    ], 
+    bookings: [
+      { id: crypto.randomUUID(), inquiry_id: inquiryId2, client_id: clientId, event_date: '2026-09-01', start_time: '10:00', end_time: '12:00', location: 'Studio', status: 'CONFIRMED', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    ], 
+    admin_notes: [
+      { id: crypto.randomUUID(), inquiry_id: inquiryId1, admin_id: adminId, note: 'Follow up next week about the wedding package.', created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
+    ], 
+    notifications: [
+      { id: crypto.randomUUID(), type: 'NEW_INQUIRY', title: 'New Inquiry', message: 'Jane Doe submitted a new inquiry for a WEDDING.', is_read: false, admin_id: adminId, created_at: new Date().toISOString() }
+    ],
+    portfolio: [] 
+  };
+  
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+  return seed;
 };
 
 const saveDb = (data: any) => {
@@ -34,9 +65,9 @@ class MockQueryBuilder {
     return this;
   }
 
-  insert(data: any[]) {
+  insert(data: any | any[]) {
     this.action = 'insert';
-    this.dataPayload = data;
+    this.dataPayload = Array.isArray(data) ? data : [data];
     return this;
   }
 
@@ -127,6 +158,9 @@ class MockQueryBuilder {
         result = result.map(item => {
           const projected: any = {};
           for (const field of (this.selectFields as string[])) {
+            // Note: Doesn't properly support foreign key joins like "clients(full_name)" in this simple mock
+            // But good enough for basic tests
+            if (field.includes('(')) continue; 
             projected[field] = item[field];
           }
           return projected;
@@ -140,7 +174,7 @@ class MockQueryBuilder {
 
     } else if (this.action === 'insert') {
       const itemsToInsert = this.dataPayload.map((item: any) => {
-        const id = crypto.randomUUID();
+        const id = item.id || crypto.randomUUID();
         
         // Trigger notification if it's an inquiry
         if (this.tableName === 'inquiries') {
@@ -148,21 +182,26 @@ class MockQueryBuilder {
           db.notifications = [...notifs, {
             id: crypto.randomUUID(),
             type: 'NEW_INQUIRY',
-            message: `New inquiry received from ${item.client_name || 'a client'} for a ${item.service_type || 'event'}`,
+            title: 'New Inquiry',
+            message: `New inquiry received for a ${item.event_type || 'event'}`,
             is_read: false,
             created_at: new Date().toISOString(),
-            link_id: id
           }];
         }
         
         return {
           id,
           created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
           ...item
         };
       });
       db[this.tableName] = [...tableData, ...itemsToInsert];
       saveDb(db);
+      
+      if (this.returnSingle) {
+        return { data: itemsToInsert[0], error: null };
+      }
       return { data: itemsToInsert, error: null };
 
     } else if (this.action === 'update') {
@@ -175,7 +214,7 @@ class MockQueryBuilder {
           }
         }
         if (match) {
-          return { ...item, ...this.dataPayload };
+          return { ...item, ...this.dataPayload, updated_at: new Date().toISOString() };
         }
         return item;
       });
@@ -209,14 +248,62 @@ export const mockSupabase = {
   rpc: async (fnName: string, params: any) => {
     if (fnName === 'get_public_availability') {
       const db = getDb();
-      const inquiries = db.inquiries || [];
-      const result = inquiries.filter((i: any) => {
-        return i.event_date >= params.start_date && i.event_date <= params.end_date;
-      }).map((i: any) => ({
-        event_date: i.event_date,
-        status: i.status
+      const bookings = db.bookings || [];
+      const result = bookings.filter((b: any) => {
+        return b.event_date >= params.req_start_date && b.event_date <= params.req_end_date && ['CONFIRMED', 'COMPLETED'].includes(b.status);
+      }).map((b: any) => ({
+        event_date: b.event_date,
+        is_available: false
       }));
       return { data: result, error: null };
+    }
+    if (fnName === 'submit_inquiry') {
+      const db = getDb();
+      let clients = db.clients || [];
+      let client = clients.find((c: any) => c.email === params.p_email);
+      
+      if (!client) {
+        client = {
+          id: crypto.randomUUID(),
+          full_name: params.p_name,
+          email: params.p_email,
+          phone: params.p_phone,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        db.clients = [...clients, client];
+      }
+
+      const inquiry = {
+        id: crypto.randomUUID(),
+        client_id: client.id,
+        event_type: params.p_event_type,
+        event_date: params.p_event_date,
+        start_time: params.p_start_time,
+        end_time: params.p_end_time,
+        location: params.p_location,
+        project_notes: params.p_notes,
+        status: 'PENDING',
+        source: 'WEBSITE',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      db.inquiries = [...(db.inquiries || []), inquiry];
+      
+      // Notification
+      const notifs = db.notifications || [];
+      db.notifications = [...notifs, {
+        id: crypto.randomUUID(),
+        type: 'NEW_INQUIRY',
+        title: 'New Inquiry',
+        message: `New inquiry received for a ${params.p_event_type || 'event'}`,
+        is_read: false,
+        created_at: new Date().toISOString(),
+      }];
+      
+      saveDb(db);
+      return { data: inquiry, error: null };
     }
     return { data: null, error: 'Unknown RPC' };
   }
