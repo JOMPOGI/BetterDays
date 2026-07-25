@@ -132,3 +132,22 @@ img, video {
   }
 }
 
+
+.backBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  opacity: 0.6;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  transition: opacity 0.2s ease;
+}
+.backBtn:hover {
+  opacity: 1;
+}

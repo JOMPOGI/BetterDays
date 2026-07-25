@@ -3,7 +3,7 @@ const STORAGE_KEY = 'better_days_mock_db';
 const getDb = () => {
   const data = localStorage.getItem(STORAGE_KEY);
   if (data) return JSON.parse(data);
-  return { inquiries: [], portfolio: [] };
+  return { inquiries: [], portfolio: [], notifications: [] };
 };
 
 const saveDb = (data: any) => {
@@ -139,10 +139,28 @@ class MockQueryBuilder {
       return { data: result, error: null };
 
     } else if (this.action === 'insert') {
-      const itemsToInsert = this.dataPayload.map((item: any) => ({
-        id: crypto.randomUUID(),
-        ...item
-      }));
+      const itemsToInsert = this.dataPayload.map((item: any) => {
+        const id = crypto.randomUUID();
+        
+        // Trigger notification if it's an inquiry
+        if (this.tableName === 'inquiries') {
+          const notifs = db.notifications || [];
+          db.notifications = [...notifs, {
+            id: crypto.randomUUID(),
+            type: 'NEW_INQUIRY',
+            message: `New inquiry received from ${item.client_name || 'a client'} for a ${item.service_type || 'event'}`,
+            is_read: false,
+            created_at: new Date().toISOString(),
+            link_id: id
+          }];
+        }
+        
+        return {
+          id,
+          created_at: new Date().toISOString(),
+          ...item
+        };
+      });
       db[this.tableName] = [...tableData, ...itemsToInsert];
       saveDb(db);
       return { data: itemsToInsert, error: null };

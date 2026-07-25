@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import styles from './Clients.module.css';
 
@@ -14,6 +15,7 @@ interface Client {
 export function Clients() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClients();
@@ -60,6 +62,9 @@ export function Clients() {
 
   return (
     <div className={styles.container}>
+      <button className="backBtn" onClick={() => navigate('/admin')}>
+        &larr; Back to Dashboard
+      </button>
       <div className={styles.header}>
         <h1>Client Directory</h1>
         <p>Manage and track your clientele.</p>

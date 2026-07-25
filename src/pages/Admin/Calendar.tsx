@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   format, 
   startOfMonth, 
@@ -38,6 +38,7 @@ export function Calendar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [_loading, setLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBookings(currentDate);
@@ -110,19 +111,46 @@ export function Calendar() {
     }
   };
 
+  const pendingBookings = bookings.filter(b => b.status === 'PENDING').length;
+  const confirmedBookings = bookings.filter(b => b.status === 'CONFIRMED').length;
+
   return (
     <div className={styles.container}>
+      <button className="backBtn" onClick={() => navigate('/admin')}>
+        &larr; Back to Dashboard
+      </button>
       <div className={styles.header}>
+        <div>
+          <h1>CRM / Calendar</h1>
+          <p>Manage your bookings and schedule.</p>
+        </div>
+        <button className={styles.addBtn} onClick={openNewBooking}>
+          <Plus size={18} />
+          New Booking
+        </button>
+      </div>
+
+      <div className={styles.quickStats}>
+        <div className={styles.statCard}>
+          <h3>Pending Bookings</h3>
+          <p>{pendingBookings}</p>
+        </div>
+        <div className={styles.statCard}>
+          <h3>Confirmed this Month</h3>
+          <p>{confirmedBookings}</p>
+        </div>
+        <div className={styles.statCard}>
+          <h3>Upcoming Events</h3>
+          <p>{bookings.filter(b => b.status === 'CONFIRMED' && new Date(b.event_date) >= new Date()).length}</p>
+        </div>
+      </div>
+
+      <div className={styles.calendarHeader}>
         <div className={styles.monthNav}>
           <button onClick={prevMonth} className={styles.iconBtn}><ChevronLeft /></button>
           <h2>{format(currentDate, 'MMMM yyyy')}</h2>
           <button onClick={nextMonth} className={styles.iconBtn}><ChevronRight /></button>
         </div>
-        
-        <button className={styles.addBtn} onClick={openNewBooking}>
-          <Plus size={18} />
-          New Booking
-        </button>
       </div>
 
       <div className={styles.calendar}>
