@@ -4,6 +4,8 @@ import { Login } from './pages/Admin/Login';
 import { AdminLayout } from './pages/Admin/Layout';
 import { Overview } from './pages/Admin/Overview';
 import { Calendar } from './pages/Admin/Calendar';
+import { Clients } from './pages/Admin/Clients';
+import { PortfolioManager } from './pages/Admin/PortfolioManager';
 import { ProtectedRoute } from './components/Admin/ProtectedRoute';
 import { Navbar } from './components/Navbar';
 import { LogoIntroAnimation } from './components/LogoIntroAnimation';
@@ -73,6 +75,8 @@ function App() {
           <Route element={<AdminLayout />}>
             <Route path="/admin" element={<Overview />} />
             <Route path="/admin/calendar" element={<Calendar />} />
+            <Route path="/admin/clients" element={<Clients />} />
+            <Route path="/admin/portfolio" element={<PortfolioManager />} />
           </Route>
         </Route>
       </Routes>
