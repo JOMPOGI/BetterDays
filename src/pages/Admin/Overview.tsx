@@ -46,11 +46,11 @@ export function Overview() {
       <h1 className={styles.title}>Overview</h1>
       
       <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
+        <div className={styles.statCard} onClick={() => navigate('/admin/calendar')}>
           <h3>New / Pending</h3>
           <p className={styles.statNumber}>{pending.length}</p>
         </div>
-        <div className={styles.statCard}>
+        <div className={styles.statCard} onClick={() => navigate('/admin/calendar')}>
           <h3>Confirmed</h3>
           <p className={styles.statNumber}>{confirmed.length}</p>
         </div>
