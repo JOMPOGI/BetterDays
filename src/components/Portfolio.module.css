@@ -1,17 +1,21 @@
 .portfolioSection {
-  padding: clamp(3rem, 8vh, 6rem) 0;
+  padding: clamp(1rem, 4vh, 3rem) 0;
   background-color: var(--bg-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .filtersWrapper {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   padding: 0 2rem;
   /* Hide scrollbar */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  flex-shrink: 0;
 }
 .filtersWrapper::-webkit-scrollbar {
   display: none;
@@ -64,9 +68,17 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 40vw, 300px), 1fr));
   gap: clamp(0.5rem, 2vw, 1.5rem);
-  padding: 0 clamp(0.5rem, 3vw, 2rem);
+  padding: 0 clamp(0.5rem, 3vw, 2rem) 2rem;
   max-width: 1600px;
   margin: 0 auto;
+  width: 100%;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.grid::-webkit-scrollbar {
+  display: none;
 }
 
 .gridItem {
