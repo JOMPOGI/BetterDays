@@ -1,7 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
 import styles from './Layout.module.css';
-
 export function AdminLayout() {
   const navigate = useNavigate();
 
