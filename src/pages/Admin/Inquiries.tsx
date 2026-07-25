@@ -30,7 +30,7 @@ export interface Inquiry {
 export function Inquiries() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentFolder, setCurrentFolder] = useState<'INBOX' | 'UNREAD' | 'ARCHIVED' | 'TRASH'>('INBOX');
+  const [currentFolder, setCurrentFolder] = useState<'INBOX' | 'ARCHIVED' | 'TRASH'>('INBOX');
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
   const navigate = useNavigate();
 
@@ -68,15 +68,10 @@ export function Inquiries() {
     }
   };
 
-  const filteredInquiries = inquiries.filter(inq => {
-    if (currentFolder === 'TRASH') return inq.is_deleted;
-    if (inq.is_deleted) return false;
-
-    if (currentFolder === 'ARCHIVED') return inq.is_archived;
-    if (inq.is_archived) return false;
-
-    if (currentFolder === 'UNREAD') return !inq.is_read;
-    return true; // INBOX
+  const filteredInquiries = inquiries.filter(i => {
+    if (currentFolder === 'ARCHIVED') return i.is_archived && !i.is_deleted;
+    if (currentFolder === 'TRASH') return i.is_deleted;
+    return !i.is_archived && !i.is_deleted;
   });
 
   const getUnreadCount = () => inquiries.filter(i => !i.is_read && !i.is_archived && !i.is_deleted).length;
@@ -107,14 +102,6 @@ export function Inquiries() {
             <InboxIcon size={18} />
             Inbox
             {getUnreadCount() > 0 && <span className={styles.badge}>{getUnreadCount()}</span>}
-          </button>
-          
-          <button 
-            className={`${styles.folderBtn} ${currentFolder === 'UNREAD' ? styles.activeFolder : ''}`}
-            onClick={() => {setCurrentFolder('UNREAD'); setSelectedInquiry(null);}}
-          >
-            <Mail size={18} />
-            Unread
           </button>
           
           <button 
