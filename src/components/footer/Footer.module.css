@@ -1,0 +1,33 @@
+.footer {
+  background: var(--bg); color: var(--text-secondary); padding: 60px 6vw 4vh 6vw;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 30px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .05em;
+  border-top: 1px solid var(--border-color);
+}
+
+.footBrand {
+  font-family: var(--disp); font-style: italic; font-size: 1.1rem; color: var(--text-primary);
+}
+
+.footer a:hover {
+  color: var(--text-primary);
+}
+
+.footCols {
+  display: flex; gap: 60px; flex-wrap: wrap;
+}
+
+.footCol {
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.footHead {
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: .14em; 
+  font-size: 10px; margin-bottom: 4px;
+}
+
+@media (max-width: 600px) {
+  .footer { flex-direction: column; gap: 40px; padding: 40px 6vw; }
+  .footCols { flex-direction: column; gap: 30px; }
+  .footCol a { padding: 8px 0; font-size: 13px; }
+}

@@ -1,0 +1,840 @@
+/* Booking Wizard Dark Theme Redesign */
+.wizardContainer {
+  --book-bg: #0B0B0B;
+  --book-text: #FFFFFF;
+  --book-muted: #888888;
+  --book-gold: #D4C5A9;
+  --book-gold-dark: #BFA77D;
+  --book-card: #1A1A1A;
+  --book-border: #333333;
+  --book-gold-light: rgba(212, 197, 169, 0.1);
+
+  height: 100dvh;
+  width: 100vw;
+  background: var(--book-bg);
+  color: var(--book-text);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--body);
+  overflow: hidden;
+}
+
+.header {
+  display: none;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4vh 4vw;
+  gap: 30px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.wizardContent {
+  width: 100%;
+  max-width: 600px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stepContent {
+  width: 100%;
+  animation: fadeIn 0.4s ease;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepHeader {
+  flex-shrink: 0;
+}
+
+.stepBody {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 24px;
+}
+
+.stepBody::-webkit-scrollbar {
+  width: 4px;
+}
+.stepBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+.stepBody::-webkit-scrollbar-thumb {
+  background: var(--book-border);
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stepHeader > h2 {
+  font-family: var(--disp);
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--book-text);
+}
+.stepDesc {
+  color: var(--book-muted);
+  font-size: 1rem;
+  margin-bottom: 32px;
+}
+
+/* STEP 1: PACKAGES */
+.packageGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.packageCard {
+  background: var(--book-card);
+  border: 1px solid var(--book-border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  gap: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.packageCard:hover {
+  border-color: var(--book-gold-dark);
+}
+.packageCard.selected {
+  border-color: var(--book-gold-dark);
+  box-shadow: 0 4px 20px rgba(191, 167, 125, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.packageIcon {
+  width: 48px;
+  height: 48px;
+  background: #2A2A2A;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--book-muted);
+}
+.packageCard.selected .packageIcon {
+  background: var(--book-gold-light);
+  color: var(--book-gold-dark);
+}
+
+.packageInfo {
+  flex: 1;
+}
+
+.packageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.packageTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.packageTitleRow h3 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+.packageBadge {
+  background: #2A2A2A;
+  color: var(--book-text);
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+.price {
+  font-family: var(--disp);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--book-text);
+}
+
+.packageDesc {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--book-muted);
+  max-width: 90%;
+}
+
+.selectedMark {
+  font-size: 0.85rem;
+  color: var(--book-gold-dark);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+/* ACTIONS */
+.actions {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.actionBtn {
+  background: var(--book-text);
+  color: var(--book-bg);
+  border: 1px solid var(--book-text);
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.actionBtn:hover {
+  background: transparent;
+  color: var(--book-text);
+}
+.actionBtn:disabled {
+  background: #333;
+  border-color: #333;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.backBtn {
+  background: transparent;
+  color: var(--book-muted);
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0;
+}
+.backBtn:hover {
+  color: var(--book-text);
+}
+
+/* CALENDAR (Step 2) */
+.calendarContainer {
+  background: var(--book-card);
+  border: 1px solid var(--book-border);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  color: var(--book-text);
+}
+.calNav {
+  background: transparent;
+  border: none;
+  color: var(--book-muted);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.calNav:hover { color: var(--book-text); }
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  text-align: center;
+}
+.calDayHeader {
+  font-size: 0.8rem;
+  color: var(--book-muted);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.calCell {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--book-text);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.calCell.disabled {
+  color: #555;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.calCell.selected {
+  background: var(--book-text);
+  color: var(--book-bg);
+}
+.calCell:hover:not(.disabled):not(.selected) {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.calLegend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 32px;
+  font-size: 0.8rem;
+  color: var(--book-muted);
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.legendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+.legendDot.selected { background: var(--book-text); }
+.legendDot.available { background: transparent; border: 1px solid #555; }
+
+.dateSummaryPill {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dateCheck {
+  width: 24px;
+  height: 24px;
+  background: var(--book-text);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--book-bg);
+}
+.dateDetails span {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--book-muted);
+  margin-bottom: 2px;
+}
+.dateDetails strong {
+  font-size: 1rem;
+  color: var(--book-text);
+  font-weight: 500;
+}
+
+/* FORMS (Step 3 & 4) */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.formGroup.full {
+  grid-column: 1 / -1;
+}
+.formGroup label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--book-muted);
+  margin-left: 8px;
+}
+.formGroup label span {
+  opacity: 0.5;
+  text-transform: lowercase;
+}
+.input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--book-border);
+  border-radius: 50px;
+  padding: 16px 24px;
+  font-size: 1rem;
+  color: var(--book-text);
+  font-family: var(--body);
+  outline: none;
+  transition: all 0.2s;
+}
+.input:focus {
+  border-color: var(--book-text);
+  background: rgba(255,255,255,0.05);
+}
+.input::placeholder {
+  color: #555;
+}
+
+.contactMethodGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.contactMethodCard {
+  background: var(--book-card);
+  border: 1px solid var(--book-border);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--book-muted);
+}
+.contactMethodCard.selected {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--book-text);
+  color: var(--book-text);
+}
+.contactIcon {
+  font-size: 1.2rem;
+}
+.contactLabel {
+  font-size: 0.9rem;
+}
+
+
+/* Dark Quotation Card */
+.darkQuoteCard {
+  background: var(--book-card);
+  color: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid var(--book-border);
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.quoteTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+.quoteTopLeft span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--book-muted);
+  display: block;
+  margin-bottom: 8px;
+}
+.quoteTopLeft h3 {
+  font-family: var(--disp);
+  font-size: 1.8rem;
+  margin: 0 0 4px 0;
+  color: #FFFFFF;
+}
+.quoteTopLeft p {
+  margin: 0;
+  color: var(--book-muted);
+  font-size: 0.9rem;
+}
+.quoteTopRight {
+  text-align: right;
+}
+.quoteTopRight h3 {
+  font-family: var(--disp);
+  color: #FFFFFF;
+  font-size: 1.8rem;
+  margin: 0 0 4px 0;
+}
+.quoteTopRight p {
+  color: var(--book-muted);
+  font-size: 0.8rem;
+  margin: 0;
+}
+.quoteDivider {
+  height: 1px;
+  background: var(--book-border);
+  margin-bottom: 24px;
+}
+.quoteRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  color: var(--book-muted);
+}
+.quoteRow:last-child {
+  margin-bottom: 0;
+}
+.quoteRow strong {
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--book-text);
+}
+.quoteRow.balance strong {
+  color: #FFFFFF;
+}
+
+/* Booking Summary Pill */
+.lightSummary {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid var(--book-border);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.summaryLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--book-muted);
+  margin-bottom: 24px;
+  display: block;
+  font-weight: 600;
+}
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+.summaryRow:last-child {
+  margin-bottom: 0;
+}
+.summaryRow span:first-child {
+  color: var(--book-muted);
+}
+.summaryRow span:last-child {
+  color: var(--book-text);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* Terms Checkbox */
+.termsCheckbox {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  font-size: 0.9rem;
+  color: var(--book-muted);
+  line-height: 1.5;
+}
+.termsCheckbox input {
+  display: none;
+}
+.customCheck {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--book-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.termsCheckbox input:checked + .customCheck {
+  background: var(--book-text);
+  border-color: var(--book-text);
+  color: var(--book-bg);
+}
+.termsCheckbox a {
+  color: var(--book-text);
+  text-decoration: underline;
+}
+
+/* Secure Payment */
+.paymentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.payOption {
+  background: transparent;
+  border: 1px solid var(--book-border);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.payOption.gcash.selected {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: #3B82F6;
+}
+.payOption.maya.selected {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22C55E;
+}
+.payOption.card.selected, .payOption.bank.selected {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--book-text);
+}
+.payOption h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  color: var(--book-text);
+}
+.payOption p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--book-muted);
+}
+.payNotice {
+  font-size: 0.85rem;
+  color: var(--book-muted);
+  margin-top: -12px;
+  margin-bottom: 24px;
+}
+.sslBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--book-muted);
+  margin-top: 24px;
+}
+.sslDot {
+  width: 8px;
+  height: 8px;
+  background: #22C55E;
+  border-radius: 50%;
+}
+
+@media (max-width: 900px) {
+  .formGrid { grid-template-columns: 1fr; }
+  .contactMethodGrid { grid-template-columns: 1fr 1fr; }
+  .main { padding: 40px 6vw; }
+}
+
+@media (max-width: 600px) {
+  .packageCard { flex-direction: column; gap: 12px; padding: 16px; }
+  .packageHeader { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .price { align-self: flex-start; }
+  
+  .calendarContainer { padding: 16px; }
+  .calCell { font-size: 0.85rem; }
+  .dateSummaryPill { padding: 12px 16px; }
+  
+  .actions { flex-direction: column-reverse; gap: 16px; }
+  .actionBtn { width: 100%; justify-content: center; }
+  .backBtn { width: 100%; justify-content: center; }
+  
+  .paymentGrid { grid-template-columns: 1fr; }
+}
+
+/* --- Post-Booking Flow (Payment Confirmed & Questionnaire) --- */
+
+.successCheckCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--book-gold-light);
+  color: var(--book-gold-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px auto;
+}
+
+.successHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.successHeader h2 {
+  font-family: var(--disp);
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  color: var(--book-text);
+}
+.successHeader p {
+  color: var(--book-muted);
+  font-size: 1rem;
+}
+
+.referenceCard {
+  background: var(--book-card);
+  border: 1px solid var(--book-border);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.referenceCard span {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--book-muted);
+  display: block;
+  margin-bottom: 12px;
+}
+.referenceCard h3 {
+  font-family: var(--disp);
+  font-size: 1.8rem;
+  color: var(--book-gold-dark);
+  margin: 0 0 12px 0;
+  letter-spacing: 0.05em;
+}
+.referenceCard p {
+  font-size: 0.85rem;
+  color: var(--book-muted);
+  margin: 0;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  background: #22C55E;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.nextStepsBox {
+  background: rgba(212, 197, 169, 0.05);
+  border: 1px solid var(--book-gold-dark);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.nextStepsBox p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--book-gold-dark);
+  line-height: 1.5;
+}
+
+/* Questionnaire Form */
+.qSection {
+  margin-bottom: 40px;
+}
+.qSection h3 {
+  font-family: var(--disp);
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--book-muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qSection h3 span {
+  text-transform: lowercase;
+  font-family: var(--body);
+  font-size: 0.8rem;
+  opacity: 0.5;
+  letter-spacing: 0;
+}
+
+.pillGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.briefPill {
+  background: transparent;
+  border: 1px solid var(--book-border);
+  color: var(--book-muted);
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.briefPill:hover {
+  border-color: var(--book-text);
+  color: var(--book-text);
+}
+.briefPill.selected {
+  background: var(--book-text);
+  color: var(--book-bg);
+  border-color: var(--book-text);
+}
+
+.uploadBox {
+  border: 1px dashed var(--book-border);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.02);
+}
+.uploadBox:hover {
+  border-color: var(--book-text);
+  background: rgba(255, 255, 255, 0.05);
+}
+.uploadBoxIcon {
+  color: var(--book-muted);
+  margin-bottom: 16px;
+}
+.uploadBox p {
+  margin: 0 0 8px 0;
+  color: var(--book-text);
+  font-size: 0.95rem;
+}
+.uploadBox p span {
+  color: var(--book-gold-dark);
+  text-decoration: underline;
+}
+.uploadBox small {
+  color: var(--book-muted);
+  font-size: 0.8rem;
+}
+
+.textarea {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--book-border);
+  border-radius: 16px;
+  padding: 20px;
+  font-size: 1rem;
+  color: var(--book-text);
+  font-family: var(--body);
+  outline: none;
+  transition: all 0.2s;
+  min-height: 120px;
+  resize: vertical;
+}
+.textarea:focus {
+  border-color: var(--book-text);
+  background: rgba(255,255,255,0.05);
+}
+.textarea::placeholder {
+  color: #555;
+}
