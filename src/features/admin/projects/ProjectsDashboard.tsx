@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import styles from './Clients.module.css';
-import { User, Mail, Phone, ArrowRight } from 'lucide-react';
+import styles from './ProjectsDashboard.module.css';
+import { User, Mail, Phone, ArrowRight, X, Calendar, Clock, MapPin, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/Button/Button';
 import { Input } from '@/components/ui/Input/Input';

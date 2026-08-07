@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useBooking } from '@/app/providers/BookingContext';
 import { Check, UploadCloud, Download } from 'lucide-react';
 import { downloadElementAsPDF } from '@/utils/pdfExport';
-import styles from './BookingWizard.module.css';
+import styles from '../booking/BookingWizard.module.css';
 
 export function Questionnaire({ onBack }: { onBack?: () => void }) {
   const navigate = useNavigate();

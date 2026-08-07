@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 
 import { CalendarDays, Users, Inbox, LogOut, Camera } from 'lucide-react';
-import styles from './Layout.module.css';
+import styles from './AdminLayout.module.css';
 
 export function AdminLayout() {
   const navigate = useNavigate();

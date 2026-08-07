@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useBooking } from '@/app/providers/BookingContext';
-import { supabase } from '@/integrations/supabase/client';
 import { downloadElementAsPDF } from '@/utils/pdfExport';
 import type { PackageType } from '@/app/providers/BookingContext';
 import { Questionnaire } from '@/features/questionnaire/Questionnaire';
-import { Video, Camera, Heart, Check, Phone, MessageSquare, Mail, MessageCircle, Info, CreditCard, Download } from 'lucide-react';
+import { Video, Camera, Heart, Check, Phone, MessageSquare, Mail, MessageCircle, Download } from 'lucide-react';
 import styles from './BookingWizard.module.css';
 
 type PackageDef = { id: PackageType; name: string; price: number; description: string; icon: React.ReactNode };

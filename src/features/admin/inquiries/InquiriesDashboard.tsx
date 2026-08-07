@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import styles from './Inquiries.module.css';
+import styles from './InquiriesDashboard.module.css';
 import { format } from 'date-fns';
 import { Mail, Inbox as InboxIcon, Archive, Trash2, Circle, CheckCircle2, CalendarPlus, CornerUpLeft } from 'lucide-react';
 
