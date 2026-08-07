@@ -1,0 +1,30 @@
+.sectionDark {
+  background: var(--bg); color: var(--text-primary);
+  padding: min(14vh, 140px) 6vw;
+}
+
+.goldEyebrow {
+  color: var(--text-secondary) !important;
+}
+
+.processList {
+  margin-top: 60px; border-top: 1px solid var(--border-color);
+}
+.processItem {
+  display: grid; grid-template-columns: 100px 1fr 1.4fr; gap: 32px; padding: 34px 0;
+  border-bottom: 1px solid var(--border-color); align-items: baseline;
+}
+@media(max-width:780px){
+  .processItem { grid-template-columns: 70px 1fr; }
+  .pDesc { grid-column: 2; }
+}
+
+.pCode {
+  font-family: var(--mono); font-size: 12px; color: var(--text-secondary); letter-spacing: .05em;
+}
+.pTitle {
+  font-family: var(--disp); font-size: 1.5rem; font-style: italic;
+}
+.pDesc {
+  font-size: 14.5px; line-height: 1.75; color: var(--text-muted); font-weight: 300; max-width: 52ch;
+}

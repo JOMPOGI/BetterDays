@@ -1,0 +1,53 @@
+.section {
+  position: relative; padding: min(14vh, 140px) 6vw;
+}
+
+.philosophy {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; align-items: center;
+}
+@media(max-width:880px){
+  .philosophy { grid-template-columns: 1fr; gap: 60px; }
+}
+
+.philosophyCopy p {
+  font-size: 16px; line-height: 1.85; color: var(--text-muted); font-weight: 300; 
+  margin-top: 26px; max-width: 46ch;
+}
+
+.philosophyStats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 40px;
+}
+.statNum {
+  font-family: var(--disp); font-style: italic; font-size: 2.6rem; color: var(--text-primary);
+}
+.statLabel {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; 
+  color: var(--text-muted); margin-top: 6px;
+}
+
+.collage {
+  position: relative;
+  height: 600px;
+  width: 100%;
+}
+.img1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75%;
+  height: 70%;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+.img2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 60%;
+  height: 60%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 12px solid var(--bg);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}

@@ -68,8 +68,16 @@ export function InquirySection() {
   };
 
   return (
-    <div className={styles.sectionContainer}>
-      <div className={styles.formWrapper}>
+    <div className={styles.ctaSection}>
+      <div className="eyebrow reveal" style={{ justifyContent: 'center' }}>Start Your Reel</div>
+      <h2 className="reveal" style={{ margin: '0 auto', maxWidth: '20ch', textAlign: 'center' }}>
+        Let's manifest <em>your</em> better days.
+      </h2>
+      <p className="reveal" style={{ margin: '22px auto 44px', maxWidth: '44ch', fontWeight: 300, color: 'var(--text-muted)', textAlign: 'center' }}>
+        We take on a limited number of weddings each season to give every couple our full attention behind the lens.
+      </p>
+      
+      <div className={`${styles.formWrapper} reveal`}>
 
         <div className={styles.content}>
           {errorMsg && (

@@ -1,13 +1,28 @@
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Hero.module.css';
 
-interface HeroProps {
-  onInquireClick: () => void;
-}
+export function Hero() {
+  const [showVideo, setShowVideo] = useState(false);
+  const eyebrowRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-export function Hero({ onInquireClick }: HeroProps) {
+  useEffect(() => {
+    // Add riseIn animation classes on mount
+    const timer1 = setTimeout(() => eyebrowRef.current?.classList.add(styles.in), 300);
+    const timer2 = setTimeout(() => titleRef.current?.classList.add(styles.in), 550);
+    const timer3 = setTimeout(() => subRef.current?.classList.add(styles.in), 800);
+    const timer4 = setTimeout(() => bottomRef.current?.classList.add(styles.in), 1100);
+
+    return () => {
+      clearTimeout(timer1); clearTimeout(timer2); clearTimeout(timer3); clearTimeout(timer4);
+    };
+  }, []);
+
   return (
-    <section className={styles.hero}>
+    <div className={styles.hero}>
       <div className={styles.videoContainer}>
         <div className={styles.overlay}></div>
         <img 
@@ -16,30 +31,48 @@ export function Hero({ onInquireClick }: HeroProps) {
           className={styles.video} 
         />
       </div>
-
-      <div className={styles.content}>
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className={styles.textContent}
-        >
-          <h1 className={styles.title}>BETTER DAYS STUDIOS</h1>
-          <p className={styles.tagline}>Captivating Moments • Manifesting Better Days</p>
-        </motion.div>
-
-        <motion.button
-          onClick={onInquireClick}
-          className={styles.ctaButton}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.1)' }}
-          whileTap={{ scale: 0.95 }}
-        >
-          [ INQUIRE NOW ]
-        </motion.button>
+      <div className={styles.heroNoise}></div>
+      
+      {showVideo && (
+        <div className={styles.videoModal}>
+          <button className={styles.closeVideoBtn} onClick={() => setShowVideo(false)}>EXIT VIDEO</button>
+          <video 
+            autoPlay 
+            controls
+            className={styles.fullScreenVideo}
+          >
+            <source src="/pre-wed.mp4" type="video/mp4" />
+          </video>
+        </div>
+      )}
+      
+      <div className={styles.heroContent}>
+        <h1 ref={titleRef} className={styles.heroTitle}>
+          Better Days <em>Studios</em>
+        </h1>
+        <p ref={subRef} className={styles.heroSub}>
+          <span className={styles.tagline}>Captivating Moments • Manifesting Better Days</span>
+        </p>
+        <div ref={bottomRef} className={styles.heroActions}>
+          <button 
+             className={styles.heroCta} 
+             onClick={() => {
+               const el = document.getElementById('booking');
+               if (el) el.scrollIntoView({ behavior: 'smooth' });
+             }}
+             style={{ margin: 0 }}
+          >
+            BOOK NOW
+          </button>
+          <button 
+             className={styles.heroCtaAlt} 
+             onClick={() => setShowVideo(true)}
+          >
+            WATCH FILMS
+          </button>
+        </div>
       </div>
-    </section>
+
+    </div>
   );
 }
