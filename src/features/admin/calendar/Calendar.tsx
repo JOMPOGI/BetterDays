@@ -5,7 +5,6 @@ import {
   startOfMonth, 
   endOfMonth, 
   eachDayOfInterval, 
-  isToday,
   addMonths,
   subMonths
 } from 'date-fns';
@@ -16,7 +15,6 @@ export function Calendar() {
   const navigate = useNavigate();
   // Use August 2026 as the base date to match the screenshot
   const [currentDate, setCurrentDate] = useState(new Date('2026-08-01T00:00:00Z'));
-  const [viewMode, setViewMode] = useState<'month' | 'week'>('month');
 
   // Hardcoded events matching the screenshot + 2026 Philippine Holidays
   const events = [

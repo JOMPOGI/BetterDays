@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Check } from 'lucide-react';
+
 import { Checkbox } from '../../../components/ui/Checkbox/Checkbox';
 import { useToast } from '../../../components/ui/Toast/ToastContext';
 import styles from './ClientProfile.module.css';
 import { AddPaymentModal } from '../payments/AddPaymentModal';
 
 export function ClientProfile() {
-  const { id } = useParams();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const { addToast } = useToast();
   

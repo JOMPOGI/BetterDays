@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Search, Plus, Filter, MessageSquare, Phone, Calendar, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Search, Plus, MessageSquare, Phone, ArrowRight } from 'lucide-react';
+
 import { useToast } from '@/components/ui/Toast/ToastContext';
 import { EmptyState } from '@/components/ui/EmptyState/EmptyState';
 import styles from './InquiriesDashboard.module.css';
@@ -17,7 +17,6 @@ const columns = ['New', 'Contacted', 'Meeting Set', 'Contract Sent'];
 export function Inquiries() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
-  const navigate = useNavigate();
   const { addToast } = useToast();
 
   const filteredInquiries = mockInquiries.filter(i => {

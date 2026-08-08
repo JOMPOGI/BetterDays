@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 
-import { CalendarDays, Users, LayoutDashboard, CreditCard, Settings, XCircle, LogOut, Inbox } from 'lucide-react';
+import { CalendarDays, Users, LayoutDashboard, CreditCard, Settings, LogOut } from 'lucide-react';
 import styles from './AdminLayout.module.css';
 
 export function AdminLayout() {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MoreHorizontal, Search, ArrowUpDown, Plus } from 'lucide-react';
+import { Search, ArrowUpDown, Plus } from 'lucide-react';
 import styles from './ClientsList.module.css';
 import { AddProjectModal } from './AddProjectModal';
 import { EmptyState } from '@/components/ui/EmptyState/EmptyState';
