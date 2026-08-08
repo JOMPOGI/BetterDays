@@ -1,0 +1,152 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.titleArea h1 {
+  font-family: var(--disp);
+  font-size: 2.2rem;
+  color: var(--admin-text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.titleArea p {
+  color: var(--admin-text-muted);
+  font-size: 0.95rem;
+}
+
+.settingsLayout {
+  display: flex;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+/* Sidebar */
+.settingsSidebar {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebarTab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--admin-text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+  text-align: left;
+}
+
+.sidebarTab:hover {
+  background: rgba(0,0,0,0.02);
+  color: var(--admin-text-dark);
+}
+
+.sidebarTab.active {
+  background: var(--admin-card-bg);
+  color: var(--admin-text-dark);
+  border: 1px solid var(--admin-border);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+/* Content Area */
+.settingsContent {
+  flex: 1;
+  background: var(--admin-card-bg);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: var(--admin-shadow);
+}
+
+.contentHeader {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.contentTitle {
+  font-family: var(--disp);
+  font-size: 1.5rem;
+  color: var(--admin-text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.contentDesc {
+  color: var(--admin-text-muted);
+  font-size: 0.9rem;
+}
+
+/* Form Styles */
+.formGroup {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formLabel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--admin-text-dark);
+}
+
+.formInput {
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--admin-text-dark);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  outline: none;
+}
+.formInput:focus {
+  border-color: var(--admin-text-dark);
+}
+
+.formTextarea {
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--admin-text-dark);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  outline: none;
+  min-height: 100px;
+  resize: vertical;
+}
+.formTextarea:focus {
+  border-color: var(--admin-text-dark);
+}
+
+.saveBtn {
+  background: #111111;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+.saveBtn:hover {
+  opacity: 0.9;
+}

@@ -2,9 +2,12 @@ import type { RouteObject } from 'react-router-dom';
 import { Login } from '@/features/admin/authentication/Login';
 import { ProtectedRoute } from '@/features/admin/authentication/ProtectedRoute';
 import { AdminLayout } from '@/app/layouts/AdminLayout';
+import { AdminDashboard } from '@/features/admin/dashboard/AdminDashboard';
 import { Calendar } from '@/features/admin/calendar/Calendar';
-import { Clients as ProjectsDashboard } from '@/features/admin/projects/ProjectsDashboard';
-import { Inquiries as InquiriesDashboard } from '@/features/admin/inquiries/InquiriesDashboard';
+import { ClientsList } from '@/features/admin/clients/ClientsList';
+import { ClientProfile } from '@/features/admin/clients/ClientProfile';
+import { Payments } from '@/features/admin/payments/Payments';
+import { Settings } from '@/features/admin/settings/Settings';
 import { Navigate } from 'react-router-dom';
 
 export const adminRoutes: RouteObject[] = [
@@ -22,23 +25,35 @@ export const adminRoutes: RouteObject[] = [
         children: [
           {
             index: true,
-            element: <Navigate to="/admin/schedule" replace />
+            element: <Navigate to="/admin/home" replace />
+          },
+          {
+            path: 'home',
+            element: <AdminDashboard />
           },
           {
             path: 'schedule',
             element: <Calendar />
           },
           {
-            path: 'inquiries',
-            element: <InquiriesDashboard />
-          },
-          {
-            path: 'clients', // Intentionally mapping clients path to ProjectsDashboard for backwards compat
-            element: <ProjectsDashboard />
+            path: 'calendar',
+            element: <Navigate to="/admin/schedule" replace />
           },
           {
             path: 'projects',
-            element: <ProjectsDashboard />
+            element: <ClientsList />
+          },
+          {
+            path: 'projects/:id',
+            element: <ClientProfile />
+          },
+          {
+            path: 'payments',
+            element: <Payments />
+          },
+          {
+            path: 'settings',
+            element: <Settings />
           }
         ]
       }

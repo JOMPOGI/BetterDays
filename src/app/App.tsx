@@ -1,12 +1,15 @@
 import { RouterProvider } from 'react-router-dom';
 import { BookingProvider } from '@/app/providers/BookingContext';
+import { ToastProvider } from '@/components/ui/Toast/ToastContext';
 import { router } from './router';
 
 export function App() {
   return (
-    <BookingProvider>
-      <RouterProvider router={router} />
-    </BookingProvider>
+    <ToastProvider>
+      <BookingProvider>
+        <RouterProvider router={router} />
+      </BookingProvider>
+    </ToastProvider>
   );
 }
 

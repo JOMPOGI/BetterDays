@@ -2,13 +2,13 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--admin-main-bg);
+  color: var(--admin-text-dark);
 }
 
 .sidebar {
   width: 100%;
-  background: var(--glass-bg);
+  background: var(--admin-sidebar-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
   display: block;
   width: 20px;
   height: 2px;
-  background-color: var(--text-color);
+  background-color: var(--admin-sidebar-text);
   transition: all 0.3s ease;
   margin: 0 auto;
 }
@@ -55,17 +55,18 @@
 .hamburger.isOpen span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 .brandLogo {
-  color: var(--text-color);
+  color: var(--admin-text-dark);
   width: 24px;
   height: 24px;
 }
 
 .brandText {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+  font-family: var(--disp);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--admin-sidebar-text);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
 }
 
 .sidebarBody {
@@ -87,27 +88,26 @@
 .navItem {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
-  color: var(--text-color);
+  color: var(--admin-sidebar-text);
   text-decoration: none;
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   opacity: 0.7;
   transition: all 0.2s ease;
 }
 
 .navItem:hover {
   opacity: 1;
-  background: var(--input-bg);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .navItemActive {
   opacity: 1;
-  background: var(--input-bg-focus);
-  color: var(--text-color);
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .navItem svg {
@@ -117,6 +117,7 @@
 
 .navItemActive svg {
   opacity: 1;
+  color: #ffffff;
 }
 
 .navFooter {
@@ -131,10 +132,10 @@
   gap: 0.75rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--admin-sidebar-text);
   padding: 0.875rem 1rem;
-  background: #ef4444;
-  border: none;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -142,18 +143,19 @@
 }
 
 .logoutBtn:hover {
-  background: #dc2626;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .mainContent {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem 1rem; /* pad from top, minimal horizontal padding to use full screen */
-  background: var(--bg-color);
+  padding: 2rem 1rem;
+  background: var(--admin-main-bg);
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  color: var(--admin-text-dark);
 }
 
 /* Desktop layout */
@@ -163,9 +165,9 @@
   }
   
   .sidebar {
-    width: 280px;
+    width: 250px;
     height: 100vh;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid rgba(255,255,255,0.1);
     border-bottom: none;
     padding: 2rem 0;
     flex-shrink: 0;
@@ -174,47 +176,49 @@
   .sidebarHeader {
     justify-content: center;
     padding: 0 2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
   }
   .brand {
     justify-content: center;
+    flex-direction: column;
+    text-align: center;
   }
   .hamburger {
     display: none;
   }
   .sidebarBody {
-    display: flex; /* Always visible on desktop */
+    display: flex;
     flex: 1;
     padding: 0;
   }
   
   .brandLogo {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0.5rem;
   }
   
   .navMenu {
-    padding: 0;
+    padding: 0 1rem;
   }
   
   .navItem {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 1rem;
     gap: 1rem;
     font-size: 0.95rem;
   }
   
   .navFooter {
     display: flex;
-    padding: 2rem;
+    padding: 2rem 1rem;
     flex-direction: column;
     gap: 1.5rem;
-    border-top: 1px solid var(--border-color);
     margin-top: auto;
   }
 
   .mainContent {
     height: 100vh;
     overflow-y: auto;
-    padding: 3rem 2rem; /* don't stick too close to top */
+    padding: 1.5rem 2rem;
   }
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 
-import { CalendarDays, Users, Inbox, LogOut, Camera } from 'lucide-react';
+import { CalendarDays, Users, LayoutDashboard, CreditCard, Settings, XCircle, LogOut, Inbox } from 'lucide-react';
 import styles from './AdminLayout.module.css';
 
 export function AdminLayout() {
@@ -18,8 +18,8 @@ export function AdminLayout() {
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
           <div className={styles.brand}>
-            <Camera size={36} className={styles.brandLogo} />
-            <span className={styles.brandText}>ADMIN</span>
+            <span className={styles.brandText}>Better Days</span>
+            <span className={styles.brandText} style={{ fontSize: '0.7rem', opacity: 0.6, letterSpacing: '0.2em' }}>STUDIOS</span>
           </div>
           
           <button 
@@ -35,30 +35,49 @@ export function AdminLayout() {
         <div className={`${styles.sidebarBody} ${menuOpen ? styles.menuOpen : ''}`}>
           <nav className={styles.navMenu}>
             <NavLink 
+              to="/admin/home" 
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+            >
+              <LayoutDashboard size={20} />
+              Home
+            </NavLink>
+
+            <NavLink 
               to="/admin/schedule" 
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
-          >
-            <CalendarDays size={20} />
-            Schedule & Bookings
-          </NavLink>
+            >
+              <CalendarDays size={20} />
+              Calendar
+            </NavLink>
           
             <NavLink 
-              to="/admin/clients" 
+              to="/admin/projects" 
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
             >
               <Users size={20} />
-              Client Directory
+              Projects
             </NavLink>
-          
+
+
             <NavLink 
-              to="/admin/inquiries" 
+              to="/admin/payments" 
               onClick={() => setMenuOpen(false)}
               className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
             >
-              <Inbox size={20} />
-              Inquiries
+              <CreditCard size={20} />
+              Payments
+            </NavLink>
+
+            <NavLink 
+              to="/admin/settings" 
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+            >
+              <Settings size={20} />
+              Settings
             </NavLink>
           </nav>
 

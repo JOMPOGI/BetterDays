@@ -1,243 +1,110 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
+import { Search, Plus, Filter, MessageSquare, Phone, Calendar, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/ui/Toast/ToastContext';
+import { EmptyState } from '@/components/ui/EmptyState/EmptyState';
 import styles from './InquiriesDashboard.module.css';
-import { format } from 'date-fns';
-import { Mail, Inbox as InboxIcon, Archive, Trash2, Circle, CheckCircle2, CalendarPlus, CornerUpLeft } from 'lucide-react';
 
-export interface Client {
-  id: string;
-  full_name: string;
-  email: string | null;
-  phone: string | null;
-}
+const mockInquiries = [
+  { id: '1', name: 'Alex & Sam', date: 'Oct 20, 2026', type: 'Wedding', status: 'New', email: 'alex@example.com', phone: '+63 917 111 2222', message: 'Looking for full coverage.' },
+  { id: '2', name: 'Chris & Pat', date: 'Nov 5, 2026', type: 'Prenup', status: 'Contacted', email: 'chris@example.com', phone: '+63 918 333 4444', message: 'Intramuros shoot.' },
+  { id: '3', name: 'Jordan & Taylor', date: 'Sep 15, 2026', type: 'Wedding', status: 'Meeting Set', email: 'jordan@example.com', phone: '+63 919 555 6666', message: 'Destination wedding in Tagaytay.' },
+  { id: '4', name: 'Casey & Morgan', date: 'Dec 10, 2026', type: 'Wedding Premium', status: 'Contract Sent', email: 'casey@example.com', phone: '+63 920 777 8888', message: 'Waiting on contract signing.' }
+];
 
-export interface Inquiry {
-  id: string;
-  client_id: string;
-  client?: Client;
-  event_type: string;
-  event_date: string;
-  location: string | null;
-  project_notes: string | null;
-  status: string;
-  is_read: boolean;
-  is_archived: boolean;
-  is_deleted: boolean;
-  created_at: string;
-}
+const columns = ['New', 'Contacted', 'Meeting Set', 'Contract Sent'];
 
 export function Inquiries() {
-  const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentFolder, setCurrentFolder] = useState<'INBOX' | 'ARCHIVED' | 'TRASH'>('INBOX');
-  const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('All');
   const navigate = useNavigate();
+  const { addToast } = useToast();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    const { data: clientsData } = await supabase.from('clients').select('*');
-    const { data: inquiriesData, error } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-    
-    if (!error && inquiriesData) {
-      const merged = inquiriesData.map((inq: any) => ({
-        ...inq,
-        client: clientsData?.find((c: any) => c.id === inq.client_id)
-      }));
-      setInquiries(merged);
-    }
-    setLoading(false);
-  };
-
-  const updateInquiry = async (id: string, updates: Partial<Inquiry>) => {
-    await supabase.from('inquiries').update(updates).eq('id', id);
-    fetchData();
-    if (selectedInquiry && selectedInquiry.id === id) {
-      setSelectedInquiry({ ...selectedInquiry, ...updates });
-    }
-  };
-
-  const handleOpenInquiry = (inquiry: Inquiry) => {
-    setSelectedInquiry(inquiry);
-    if (!inquiry.is_read) {
-      updateInquiry(inquiry.id, { is_read: true });
-    }
-  };
-
-  const filteredInquiries = inquiries
-    .filter(i => {
-      if (currentFolder === 'ARCHIVED') return i.is_archived && !i.is_deleted;
-      if (currentFolder === 'TRASH') return i.is_deleted;
-      return !i.is_archived && !i.is_deleted;
-    })
-    .sort((a, b) => {
-      const dateDiff = new Date(a.event_date).getTime() - new Date(b.event_date).getTime();
-      if (dateDiff !== 0) return dateDiff;
-      const typeA = (a.event_type || '').toLowerCase();
-      const typeB = (b.event_type || '').toLowerCase();
-      return typeA.localeCompare(typeB);
-    });
-
-  const getUnreadCount = () => inquiries.filter(i => !i.is_read && !i.is_archived && !i.is_deleted).length;
-
-  const handleAddToSchedule = () => {
-    // Open BookingDrawer but we ideally pass inquiry ID so it prepopulates. 
-    // The current drawer doesn't accept "inquiryId to convert" via props directly unless we modify it,
-    // but we can pass `null` as bookingId and append ?inquiry_id=xxx to URL.
-    // Let's modify the drawer to take an `inquiryId` prop or URL param later if needed.
-    // For now, we'll navigate to calendar with inquiry_id if we want, or just open a generic one.
-    navigate(`/admin/schedule?inquiry=${selectedInquiry?.id}`);
-  };
+  const filteredInquiries = mockInquiries.filter(i => {
+    const matchesSearch = i.name.toLowerCase().includes(searchTerm.toLowerCase()) || i.type.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'All' || i.type.includes(filterType);
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <div className={styles.container}>
-      
       <div className={styles.header}>
-        <h1>Inquiries</h1>
-      </div>
-
-      <div className={styles.layout}>
-        {/* SIDEBAR */}
-        <div className={styles.sidebar}>
-          <button 
-            className={`${styles.folderBtn} ${currentFolder === 'INBOX' ? styles.activeFolder : ''}`}
-            onClick={() => {setCurrentFolder('INBOX'); setSelectedInquiry(null);}}
+        <div className={styles.titleArea}>
+          <h1>Inquiries & Leads</h1>
+          <p>Manage incoming requests and convert leads into official projects</p>
+        </div>
+        <div className={styles.headerActions}>
+          <div className={styles.searchWrapper}>
+            <Search size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              placeholder="Search inquiries..." 
+              className={styles.searchInput}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <select 
+            className={styles.filterBtn} 
+            value={filterType} 
+            onChange={e => setFilterType(e.target.value)}
+            style={{ appearance: 'auto', paddingRight: '24px' }}
           >
-            <InboxIcon size={18} />
-            Inbox
-            {getUnreadCount() > 0 && <span className={styles.badge}>{getUnreadCount()}</span>}
-          </button>
-          
-          <button 
-            className={`${styles.folderBtn} ${currentFolder === 'ARCHIVED' ? styles.activeFolder : ''}`}
-            onClick={() => {setCurrentFolder('ARCHIVED'); setSelectedInquiry(null);}}
-          >
-            <Archive size={18} />
-            Archived
-          </button>
-          
-          <button 
-            className={`${styles.folderBtn} ${currentFolder === 'TRASH' ? styles.activeFolder : ''}`}
-            onClick={() => {setCurrentFolder('TRASH'); setSelectedInquiry(null);}}
-          >
-            <Trash2 size={18} />
-            Trash
+            <option value="All">All Types</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Prenup">Prenup</option>
+          </select>
+          <button className={styles.recordBtn}>
+            <Plus size={18} /> Add Manual Lead
           </button>
         </div>
+      </div>
 
-        {/* MAIN CONTENT */}
-        <div className={styles.mainContent}>
-          {selectedInquiry ? (
-            /* MESSAGE VIEW */
-            <div className={styles.messageView}>
-              <div className={styles.messageToolbar}>
-                <button className={styles.iconBtn} onClick={() => setSelectedInquiry(null)}>
-                  <CornerUpLeft size={18} />
-                  Back
-                </button>
-                <div className={styles.messageActions}>
-                  <button className={styles.iconBtn} onClick={() => updateInquiry(selectedInquiry.id, { is_read: !selectedInquiry.is_read })}>
-                    {selectedInquiry.is_read ? <Circle size={18} /> : <Mail size={18} />}
-                  </button>
-                  <button className={styles.iconBtn} onClick={() => updateInquiry(selectedInquiry.id, { is_archived: !selectedInquiry.is_archived })}>
-                    <Archive size={18} />
-                  </button>
-                  <button className={styles.iconBtn} onClick={() => {
-                    updateInquiry(selectedInquiry.id, { is_deleted: !selectedInquiry.is_deleted });
-                    setSelectedInquiry(null);
-                  }}>
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-
-              <div className={styles.messageHeader}>
-                <div className={styles.senderInfo}>
-                  <h2>{selectedInquiry.client?.full_name || 'Unknown Client'}</h2>
-                  <p>{selectedInquiry.client?.email || 'No email provided'}</p>
-                </div>
-                <div className={styles.messageMeta}>
-                  <span>{format(new Date(selectedInquiry.created_at), 'MMM d, yyyy h:mm a')}</span>
-                  <span className={`${styles.statusBadge} ${styles[selectedInquiry.status.toLowerCase()]}`}>
-                    {selectedInquiry.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.messageBody}>
-                <div className={styles.eventSummary}>
-                  <div className={styles.summaryItem}>
-                    <strong>Event Type:</strong> {selectedInquiry.event_type}
-                  </div>
-                  <div className={styles.summaryItem}>
-                    <strong>Preferred Date:</strong> {format(new Date(selectedInquiry.event_date), 'MMM d, yyyy')}
-                  </div>
-                  <div className={styles.summaryItem}>
-                    <strong>Location:</strong> {selectedInquiry.location || 'Not specified'}
-                  </div>
-                  <div className={styles.summaryItem}>
-                    <strong>Phone:</strong> {selectedInquiry.client?.phone || 'Not specified'}
-                  </div>
-                </div>
-
-                <div className={styles.messageContent}>
-                  <h3>Message / Requirements</h3>
-                  <p>{selectedInquiry.project_notes || 'No additional message provided.'}</p>
-                </div>
-
-                {selectedInquiry.status !== 'CONFIRMED' && selectedInquiry.status !== 'COMPLETED' && (
-                  <div className={styles.actionBanner}>
-                    <button className={styles.scheduleBtn} onClick={handleAddToSchedule}>
-                      <CalendarPlus size={20} />
-                      ADD TO CALENDAR
-                    </button>
-                  </div>
-                )}
-
-                {selectedInquiry.status === 'CONFIRMED' && (
-                  <div className={styles.successBanner}>
-                    <CheckCircle2 size={20} />
-                    Added to Schedule
-                    <button className={styles.linkBtn} onClick={() => navigate('/admin/schedule')}>View Scheduled Event</button>
-                  </div>
-                )}
-              </div>
+      <div className={styles.kanbanBoard}>
+        {columns.map(col => (
+          <div key={col} className={styles.kanbanColumn}>
+            <div className={styles.columnHeader}>
+              <h3 className={styles.columnTitle}>{col}</h3>
+              <span className={styles.columnCount}>
+                {filteredInquiries.filter(i => i.status === col).length}
+              </span>
             </div>
-          ) : (
-            /* LIST VIEW */
-            <div className={styles.inquiryList}>
-              {loading ? (
-                <div className={styles.emptyState}>Loading inquiries...</div>
-              ) : filteredInquiries.length === 0 ? (
-                <div className={styles.emptyState}>No inquiries found in this folder.</div>
+            
+            <div className={styles.columnList}>
+              {filteredInquiries.filter(i => i.status === col).length === 0 ? (
+                <div style={{ padding: '2rem 0', background: 'var(--admin-card-bg)', borderRadius: '8px' }}>
+                  <EmptyState title={`No ${col} inquiries`} description="" />
+                </div>
               ) : (
-                filteredInquiries.map(inq => (
-                  <div 
-                    key={inq.id} 
-                    className={`${styles.inquiryRow} ${!inq.is_read ? styles.unread : ''}`}
-                    onClick={() => handleOpenInquiry(inq)}
-                  >
-                    <div className={styles.rowSender}>
-                      {!inq.is_read && <div className={styles.unreadDot} />}
-                      {inq.client?.full_name || 'Unknown'}
+                filteredInquiries.filter(i => i.status === col).map(inq => (
+                  <div key={inq.id} className={styles.kanbanCard}>
+                    <div className={styles.cardHeader}>
+                      <span className={styles.cardType}>{inq.type}</span>
+                      <span className={styles.cardDate}>{inq.date}</span>
                     </div>
-                    <div className={styles.rowSubject}>
-                      <span className={styles.eventTypeBadge}>{inq.event_type}</span>
-                      <span className={styles.rowPreview}>{inq.project_notes || 'No message...'}</span>
+                    <h4 className={styles.cardName}>{inq.name}</h4>
+                    
+                    <div className={styles.cardContact}>
+                      <div className={styles.contactItem}><MessageSquare size={14} /> {inq.email}</div>
+                      <div className={styles.contactItem}><Phone size={14} /> {inq.phone}</div>
                     </div>
-                    <div className={styles.rowDate}>
-                      {format(new Date(inq.created_at), 'MMM d')}
+                    
+                    <p className={styles.cardMessage}>"{inq.message}"</p>
+                    
+                    <div className={styles.cardActions}>
+                      <button className={styles.outlineBtn} onClick={() => addToast('Viewing details is coming soon.', 'info')}>View</button>
+                      {col === 'Contract Sent' && (
+                        <button className={styles.solidBtn} onClick={() => addToast('Inquiry converted to an active Project!', 'success')}>
+                          Convert <ArrowRight size={14} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))
               )}
             </div>
-          )}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
