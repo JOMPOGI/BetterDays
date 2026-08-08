@@ -1,0 +1,61 @@
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.checkboxWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.box {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--admin-border);
+  border-radius: 4px;
+  background: var(--admin-card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.container:hover .box:not(.checked) {
+  border-color: var(--admin-text-dark);
+}
+
+.box.checked {
+  background: var(--admin-text-dark);
+  border-color: var(--admin-text-dark);
+}
+
+.icon {
+  color: #fff;
+  animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.label {
+  font-size: 0.95rem;
+  color: var(--admin-text-dark);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

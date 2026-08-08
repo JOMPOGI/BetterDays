@@ -29,6 +29,16 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -36,10 +46,13 @@ export const Modal: React.FC<ModalProps> = ({
       <div 
         className={`${styles.modal} ${styles[size]}`} 
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? 'modal-title' : undefined}
       >
         {title && (
           <div className={styles.header}>
-            <h3 className={styles.title}>{title}</h3>
+            <h3 id="modal-title" className={styles.title}>{title}</h3>
             <button className={styles.closeButton} onClick={onClose}>
               <X size={20} />
             </button>
