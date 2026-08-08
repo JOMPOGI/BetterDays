@@ -3,20 +3,41 @@
   --book-bg: #0B0B0B;
   --book-text: #FFFFFF;
   --book-muted: #888888;
-  --book-gold: #D4C5A9;
-  --book-gold-dark: #BFA77D;
+  --book-gold: #FFFFFF;
+  --book-gold-dark: #E0E0E0;
   --book-card: #1A1A1A;
   --book-border: #333333;
-  --book-gold-light: rgba(212, 197, 169, 0.1);
+  --book-gold-light: rgba(255, 255, 255, 0.1);
 
-  height: 100dvh;
+  min-height: 100dvh;
   width: 100vw;
   background: var(--book-bg);
   color: var(--book-text);
   display: flex;
   flex-direction: column;
   font-family: var(--body);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.globalBackBtn {
+  background: transparent;
+  border: none;
+  color: var(--book-muted);
+  font-family: var(--body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  margin-bottom: 2rem;
+  transition: color 0.2s ease;
+  align-self: flex-start;
+}
+.globalBackBtn:hover {
+  color: var(--book-text);
 }
 
 .header {
@@ -31,13 +52,12 @@
   padding: 4vh 4vw;
   gap: 30px;
   height: 100%;
-  overflow-y: auto;
 }
 
 .wizardContent {
   width: 100%;
   max-width: 600px;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;

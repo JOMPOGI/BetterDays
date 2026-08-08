@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useBooking } from '@/app/providers/BookingContext';
 import { Check, UploadCloud, Download } from 'lucide-react';
 import { downloadElementAsPDF } from '@/utils/pdfExport';
+import { useToast } from '@/components/ui/Toast/ToastContext';
+import { Spinner } from '@/components/ui/Spinner/Spinner';
 import styles from '../booking/BookingWizard.module.css';
 
 export function Questionnaire({ onBack }: { onBack?: () => void }) {
@@ -11,6 +13,9 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
   
   // step 0 is "Payment Confirmed", step 1 is "Creative Brief"
   const [step, setStep] = useState(0); 
+  const [loading, setLoading] = useState(false);
+  const [currentQIndex, setCurrentQIndex] = useState(0);
+  const { addToast } = useToast();
   
   const [formData, setFormData] = useState<{
     style: string[];
@@ -19,13 +24,31 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
     customShot: string;
     inspiration: string;
     story: string;
+    duration: string;
+    spark: string;
+    likedThen: string;
+    activities: string;
+    unforgettable: string;
+    sentimental: string;
+    dislikes: string;
+    engagement: string;
+    loveNow: string;
   }>({
     style: [],
     customStyle: '',
     mustHaveShots: [],
     customShot: '',
     inspiration: '',
-    story: ''
+    story: '',
+    duration: '',
+    spark: '',
+    likedThen: '',
+    activities: '',
+    unforgettable: '',
+    sentimental: '',
+    dislikes: '',
+    engagement: '',
+    loveNow: ''
   });
 
   const toggleStyle = (style: string) => {
@@ -60,8 +83,16 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you! Your Creative Vision Questionnaire has been submitted and attached to your project.');
-    navigate('/');
+    if (formData.style.length === 0) {
+      addToast('Please select at least one video style.', 'error');
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      addToast('Your Creative Vision Questionnaire has been submitted!', 'success');
+      navigate('/');
+    }, 1200);
   };
 
   const getPackageName = () => {
@@ -138,12 +169,17 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
               <h2>Your Creative Brief</h2>
               <p className={styles.stepDesc}>Help us craft a film that is unmistakably yours.</p>
               
-              <form onSubmit={handleSubmit}>
-                
-                <div className={styles.qSection}>
+              
+<form onSubmit={handleSubmit}>
+  <div style={{ marginBottom: '24px', fontSize: '14px', color: 'var(--book-muted)' }}>
+    Question {currentQIndex + 1} of 13
+  </div>
+
+  { [
+    <div className={styles.qSection}>
                   <h3>Video Style <span>select all that apply</span></h3>
                   <div className={styles.pillGrid}>
-                    {['Cinematic Drama', 'Intimate Documentary', 'Golden-Hour Romance', 'Moody Editorial', 'Bright & Airy', 'Timeless Classic', 'Bohemian Free', 'Modern Minimalist'].map(style => (
+                    {['Candid / Chill', 'Cinematic / Epic', 'Dramatic / Tearjerker', 'Feel Good / Fun', 'Eccentric / Different', 'FUN', 'SILLY', 'HEARTWARMING', 'MEANINGFUL', 'INCLUSIVE', 'MOMENTOUS', 'CAPTURES THE SENTIMENTAL MOMENTS'].map(style => (
                       <button 
                         type="button" 
                         key={style} 
@@ -164,10 +200,11 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
                   />
                 </div>
 
-                <div className={styles.qSection}>
+                ,
+    <div className={styles.qSection}>
                   <h3>Must-Have Shots <span>optional</span></h3>
                   <div className={styles.pillGrid}>
-                    {['First look', 'Ring exchange', 'First kiss', 'First dance', 'Parent dances', 'Bouquet toss', 'Sparkler exit', 'Aerial drone', 'Candid guest moments', 'Vows & speeches'].map(shot => (
+                    {['Walking down the aisle', 'Look of the groom', 'Look of the bride', 'Vows', 'Silly and fun moments'].map(shot => (
                       <button 
                         type="button" 
                         key={shot} 
@@ -188,7 +225,8 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
                   />
                 </div>
 
-                <div className={styles.qSection}>
+                ,
+    <div className={styles.qSection}>
                   <h3>Visual Inspiration <span>optional</span></h3>
                   <textarea 
                     className={styles.textarea}
@@ -198,7 +236,8 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
                   />
                 </div>
 
-                <div className={styles.qSection}>
+                ,
+    <div className={styles.qSection}>
                   <h3>Inspiration Photos <span>optional</span></h3>
                   <div className={styles.uploadBox}>
                     <UploadCloud size={32} className={styles.uploadBoxIcon} />
@@ -207,33 +246,142 @@ export function Questionnaire({ onBack }: { onBack?: () => void }) {
                   </div>
                 </div>
 
-                <div className={styles.qSection}>
-                  <h3>Your Love Story <span>*</span></h3>
-                  <textarea 
-                    className={styles.textarea}
-                    placeholder="Tell us how you met, what makes your relationship unique, your favorite shared memory, and what you hope to feel when you watch your film..."
-                    required
-                    value={formData.story}
-                    onChange={e => setFormData({ ...formData, story: e.target.value })}
-                    style={{ minHeight: '160px' }}
+                ,
+    <div className={styles.qSection}>
+                  <h3>How long have you been together?</h3>
+                  <input 
+                    type="text" 
+                    className={styles.input} 
+                    style={{ background: 'transparent', width: '100%' }}
+                    value={formData.duration}
+                    onChange={e => setFormData({ ...formData, duration: e.target.value })}
                   />
                 </div>
 
-                <div className={styles.actions} style={{ marginTop: '40px', display: 'flex', gap: '12px' }}>
-                  <button 
-                    type="button"
-                    className={styles.backBtn} 
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }} 
-                    onClick={() => downloadElementAsPDF('creative-brief', 'BetterDays-Brief')}
-                  >
-                    <Download size={16} /> Save Brief as PDF
-                  </button>
-                  <button type="submit" className={styles.actionBtn} style={{ flex: 1 }}>
-                    Submit Brief &rarr;
-                  </button>
+                ,
+    <div className={styles.qSection}>
+                  <h3>Tell us about the spark. (If there was any!)</h3>
+                  <p className={styles.stepDesc}>How did you meet? When? Where? What was it like?</p>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.spark}
+                    onChange={e => setFormData({ ...formData, spark: e.target.value })}
+                  />
                 </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>What did you like about each other then?</h3>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.likedThen}
+                    onChange={e => setFormData({ ...formData, likedThen: e.target.value })}
+                  />
+                </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>What do you enjoy doing together?</h3>
+                  <p className={styles.stepDesc}>What is a usual date for you?</p>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.activities}
+                    onChange={e => setFormData({ ...formData, activities: e.target.value })}
+                  />
+                </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>Any unforgettable moments you'd like to share?</h3>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.unforgettable}
+                    onChange={e => setFormData({ ...formData, unforgettable: e.target.value })}
+                  />
+                </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>Any sentimental items or things during the course of your relationship?</h3>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.sentimental}
+                    onChange={e => setFormData({ ...formData, sentimental: e.target.value })}
+                  />
+                </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>What do you hate or dislike about each other?</h3>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.dislikes}
+                    onChange={e => setFormData({ ...formData, dislikes: e.target.value })}
+                  />
+                </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>Tell us about your engagement.</h3>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.engagement}
+                    onChange={e => setFormData({ ...formData, engagement: e.target.value })}
+                  />
+                </div>
+
+                ,
+    <div className={styles.qSection}>
+                  <h3>What do you love about each other now?</h3>
+                  <p className={styles.stepDesc}>Basically, why are you marrying this person?</p>
+                  <textarea 
+                    className={styles.textarea}
+                    value={formData.loveNow}
+                    onChange={e => setFormData({ ...formData, loveNow: e.target.value })}
+                  />
+                </div>
+
                 
-              </form>
+  ][currentQIndex] }
+
+  <div className={styles.actions} style={{ marginTop: '40px', display: 'flex', gap: '12px' }}>
+    {currentQIndex > 0 ? (
+      <button 
+        type="button"
+        className={styles.backBtn} 
+        style={{ flex: 1 }}
+        onClick={() => setCurrentQIndex(i => i - 1)}
+      >
+        &larr; Previous
+      </button>
+    ) : (
+      <button 
+        type="button"
+        className={styles.backBtn} 
+        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} 
+        onClick={() => downloadElementAsPDF('creative-brief', 'BetterDays-Brief')}
+      >
+        <Download size={16} /> Save Brief as PDF
+      </button>
+    )}
+
+    {currentQIndex < 12 ? (
+      <button 
+        type="button"
+        className={styles.actionBtn} 
+        style={{ flex: 1 }}
+        onClick={() => setCurrentQIndex(i => i + 1)}
+      >
+        Next &rarr;
+      </button>
+    ) : (
+      <button type="submit" className={styles.actionBtn} style={{ flex: 1, display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }} disabled={loading}>
+        {loading ? <><Spinner size={16} color="var(--book-bg)" /> Submitting...</> : 'Submit Brief →'}
+      </button>
+    )}
+  </div>
+</form>
+
             </div>
           )}
 

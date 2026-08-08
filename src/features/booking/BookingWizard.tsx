@@ -83,6 +83,11 @@ export function BookingWizard() {
     <div id="booking" className={styles.wizardContainer}>
       <main className={styles.main}>
         <div className={styles.wizardContent}>
+          {step > 1 && (
+            <button className={styles.globalBackBtn} onClick={prevStep}>
+              &larr; Back
+            </button>
+          )}
           
           {step === 1 && (
             <div className={styles.stepContent}>
@@ -226,7 +231,6 @@ export function BookingWizard() {
               )}
 
               <div className={styles.actions}>
-                <button className={styles.backBtn} onClick={prevStep}>&lt; Back</button>
                 <button className={styles.actionBtn} onClick={nextStep} disabled={!canProceedDate}>
                   Continue &rarr;
                 </button>
@@ -289,7 +293,6 @@ export function BookingWizard() {
                 </div>
 
                 <div className={styles.actions}>
-                  <button type="button" className={styles.backBtn} onClick={prevStep}>&lt; Back</button>
                   <button type="submit" form="coupleForm" className={styles.actionBtn}>
                     Continue &rarr;
                   </button>
@@ -417,7 +420,6 @@ export function BookingWizard() {
               </label>
 
               <div className={styles.actions} style={{ flexWrap: 'wrap', gap: '12px' }}>
-                <button className={styles.backBtn} onClick={prevStep}>&lt; Back</button>
                 <button 
                   className={styles.backBtn} 
                   style={{ display: 'flex', alignItems: 'center', gap: '8px' }} 
@@ -508,7 +510,6 @@ export function BookingWizard() {
               </div>
 
               <div className={styles.actions}>
-                <button className={styles.backBtn} onClick={prevStep}>&lt; Back</button>
                 <button className={styles.actionBtn} onClick={handlePayment} disabled={!paymentMethod}>
                   Pay ₱{state.quotation?.reservation.toLocaleString()}
                 </button>
