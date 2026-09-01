@@ -43,6 +43,36 @@
   opacity: 0.6;
 }
 
+.todayBtn {
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text-dark);
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.monthPicker {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--admin-border);
+  background: var(--admin-card-bg);
+  color: var(--admin-text-dark);
+  border-radius: 6px;
+  padding: 0.35rem 0.55rem;
+}
+
+.monthPicker input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
 .headerRight {
   display: flex;
   align-items: center;

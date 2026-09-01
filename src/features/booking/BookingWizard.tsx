@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { useBooking } from '@/app/providers/BookingContext';
 import { downloadElementAsPDF } from '@/utils/pdfExport';
+import { formatDateOnly } from '@/utils/date';
 import type { PackageType } from '@/app/providers/BookingContext';
 import { Questionnaire } from '@/features/questionnaire/Questionnaire';
 import { Video, Camera, Heart, Check, Phone, MessageSquare, Mail, MessageCircle, Download } from 'lucide-react';
 import styles from './BookingWizard.module.css';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, isBefore, startOfDay } from 'date-fns';
 
 type PackageDef = { id: PackageType; name: string; price: number; description: string; icon: React.ReactNode };
 
@@ -24,6 +27,9 @@ export function BookingWizard() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [termsAgreed, setTermsAgreed] = useState(false);
   const [selectingDateFor, setSelectingDateFor] = useState<'wedding' | 'prenup'>('wedding');
+  const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(new Date()));
+  const [availability, setAvailability] = useState<Record<string, 'BOOKED' | 'PENDING'>>({});
+  const [availabilityLoading, setAvailabilityLoading] = useState(false);
   
   // Client info state
   const [brideName, setBrideName] = useState('');
@@ -38,8 +44,81 @@ export function BookingWizard() {
   const [primaryLoc, setPrimaryLoc] = useState('');
   const [addLoc, setAddLoc] = useState('');
 
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const isSubmittingRef = useRef(false); // synchronous guard — closes the gap where a fast double-click fires before React re-renders the disabled button
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [checkingReturn, setCheckingReturn] = useState(true);
+
+  // If the customer is being redirected back from Xendit's checkout page,
+  // poll the booking status for a few seconds — the webhook usually lands
+  // within a second or two of the redirect firing.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const returningBookingId = params.get('xendit_ref');
+    if (!returningBookingId) {
+      setCheckingReturn(false);
+      return;
+    }
+
+    let attempts = 0;
+    const poll = async () => {
+      attempts += 1;
+      const { data } = await supabase.rpc('get_booking_status', { p_booking_id: returningBookingId });
+      if (data === 'CONFIRMED') {
+        setPaymentReference(returningBookingId);
+        setShowQuestionnaire(true);
+        setCheckingReturn(false);
+      } else if (attempts >= 8) {
+        setCheckingReturn(false);
+        setPaymentError('Your payment is still processing. If GCash/your bank confirmed the charge, refresh this page in a minute — it usually finishes within a minute.');
+      } else {
+        setTimeout(poll, 2000);
+      }
+    };
+    poll();
+  }, []);
+
   const nextStep = () => setStep(s => Math.min(s + 1, 6));
   const prevStep = () => setStep(s => Math.max(s - 1, 1));
+
+  useEffect(() => {
+    if (step !== 2) return;
+    let cancelled = false;
+
+    const loadAvailability = async () => {
+      setAvailabilityLoading(true);
+      const startDate = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+      const endDate = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+      const { data, error } = await supabase.rpc('get_public_availability', {
+        req_start_date: startDate,
+        req_end_date: endDate,
+      });
+
+      if (cancelled) return;
+      if (error) {
+        console.error('Error fetching public availability:', error);
+        setAvailability({});
+      } else {
+        const next: Record<string, 'BOOKED' | 'PENDING'> = {};
+        (data || []).forEach((row: any) => {
+          if (row.event_date && (row.status === 'CONFIRMED' || row.status === 'COMPLETED')) {
+            next[row.event_date] = 'BOOKED';
+          } else if (row.event_date && row.status === 'PENDING' && next[row.event_date] !== 'BOOKED') {
+            next[row.event_date] = 'PENDING';
+          }
+        });
+        setAvailability(next);
+      }
+      setAvailabilityLoading(false);
+    };
+
+    loadAvailability();
+    return () => { cancelled = true; };
+  }, [currentMonth, step]);
+
+  const moveMonth = (amount: number) => {
+    setCurrentMonth(prev => amount > 0 ? addMonths(prev, 1) : subMonths(prev, 1));
+  };
 
   const handlePackageSelect = (pkgId: PackageType, price: number) => {
     setPackage(pkgId);
@@ -63,10 +142,78 @@ export function BookingWizard() {
     nextStep();
   };
 
-  const handlePayment = () => {
-    setPaymentReference('PM-' + paymentMethod.toUpperCase() + '-' + Math.floor(Math.random()*1000000));
-    setShowQuestionnaire(true);
+  const handlePayment = async () => {
+    if (!state.selectedPackage || !state.eventDate || !state.quotation) return;
+    if (isSubmittingRef.current) return; // already processing this exact click — ignore repeats
+    isSubmittingRef.current = true;
+
+    setPaymentError(null);
+    setPaymentLoading(true);
+
+    const fullName = `${brideName} & ${groomName}`.trim();
+    const weddingDate = formatDateOnly(state.eventDate);
+    const prenupDate = state.prenupDate ? formatDateOnly(state.prenupDate) : null;
+    const isCombo = state.selectedPackage === 'wedding_prenup';
+
+    try {
+      // 1. Create the booking as PENDING_PAYMENT — no fake payment inserted here anymore.
+      const { data, error } = await supabase.rpc('create_public_booking', {
+        p_name: fullName,
+        p_email: email,
+        p_phone: phone,
+        p_package_type: state.selectedPackage,
+        p_event_date: state.selectedPackage === 'prenup' ? (prenupDate || weddingDate) : weddingDate,
+        p_prenup_date: isCombo ? prenupDate : null,
+        p_location: isCombo ? weddingLoc : (primaryLoc || prenupLoc),
+        p_prenup_location: isCombo ? prenupLoc : (state.selectedPackage === 'prenup' ? primaryLoc : null),
+        p_package_total: state.quotation.total,
+        p_reservation_amount: state.quotation.reservation,
+        p_balance: state.quotation.balance,
+        p_notes: state.clientDetails.notes,
+      });
+
+      if (error) throw error;
+      if (!data || !data[0]) throw new Error('Booking was not saved.');
+      const { booking_id: bookingId } = data[0];
+
+      try {
+        // 2. Ask our Edge Function to create the real Xendit checkout page
+        const returnBase = window.location.origin + window.location.pathname;
+        const { data: invoice, error: invoiceError } = await supabase.functions.invoke('create-xendit-invoice', {
+          body: {
+            bookingId,
+            amount: state.quotation.reservation,
+            email,
+            description: `${fullName} — ${state.selectedPackage.replace('_', ' + ')} downpayment`,
+            successUrl: `${returnBase}?xendit_ref=${bookingId}`,
+            failureUrl: `${returnBase}?xendit_ref=${bookingId}`,
+          },
+        });
+        if (invoiceError) throw invoiceError;
+        if (!invoice?.invoice_url) throw new Error('Could not start checkout.');
+
+        // 3. Send the customer to Xendit's hosted checkout page. They'll pick
+        // card, GCash, Maya, etc. there — actual "paid" confirmation comes
+        // back through the webhook, not this redirect.
+        window.location.href = invoice.invoice_url;
+      } catch (invoiceStepError) {
+        // The booking was already saved, but checkout couldn't start — clean
+        // it up immediately rather than leaving an unpayable orphan record
+        // sitting in the database.
+        await supabase.rpc('cancel_pending_booking', { p_booking_id: bookingId });
+        throw invoiceStepError;
+      }
+    } catch (error: any) {
+      console.error('Booking submission failed:', error);
+      setPaymentError(error?.message || 'Unable to start checkout. Please try again.');
+      setPaymentLoading(false);
+      isSubmittingRef.current = false;
+    }
   };
+
+  if (checkingReturn) {
+    return <div style={{ padding: '4rem', textAlign: 'center' }}>Confirming your payment…</div>;
+  }
 
   if (showQuestionnaire) {
     return <Questionnaire onBack={() => setShowQuestionnaire(false)} />;
@@ -137,7 +284,7 @@ export function BookingWizard() {
               <p className={styles.stepDesc}>Choose your preferred event date from the calendar below.</p>
               
               {isCombo && (
-                <div className={styles.dateTabContainer} style={{display:'flex', gap:'16px', marginBottom: '24px'}}>
+                <div className={styles.dateTabContainer}>
                   <button 
                     onClick={() => setSelectingDateFor('wedding')}
                     className={`${styles.actionBtn} ${selectingDateFor === 'wedding' ? '' : styles.inactiveTab}`}
@@ -157,52 +304,62 @@ export function BookingWizard() {
 
               <div className={styles.calendarContainer}>
                 <div className={styles.calendarHeader}>
-                  <button className={styles.calNav}>&lt;</button>
-                  <span>August 2026</span>
-                  <button className={styles.calNav}>&gt;</button>
+                  <button type="button" className={styles.calNav} onClick={() => moveMonth(-1)} aria-label="Previous month">&lt;</button>
+                  <span>{format(currentMonth, 'MMMM yyyy')}</span>
+                  <button type="button" className={styles.calNav} onClick={() => moveMonth(1)} aria-label="Next month">&gt;</button>
                 </div>
-                
+
                 <div className={styles.calendarGrid}>
                   {['S','M','T','W','T','F','S'].map((day, i) => <div key={i} className={styles.calDayHeader}>{day}</div>)}
-                  <div className={styles.calCell} style={{visibility: 'hidden'}}></div>
-                  <div className={styles.calCell} style={{visibility: 'hidden'}}></div>
-                  <div className={styles.calCell} style={{visibility: 'hidden'}}></div>
-                  <div className={styles.calCell} style={{visibility: 'hidden'}}></div>
-                  <div className={styles.calCell} style={{visibility: 'hidden'}}></div>
-                  <div className={styles.calCell} style={{visibility: 'hidden'}}></div>
-                  <div className={styles.calCell + ' ' + styles.disabled}>1</div>
-                  
-                  {Array.from({length: 30}).map((_, i) => {
-                    const dayNum = i + 2;
-                    let cellClass = styles.calCell;
-                    
-                    const activeDate = isCombo ? (selectingDateFor === 'wedding' ? state.eventDate : state.prenupDate) : state.eventDate;
-                    
-                    if (activeDate?.getDate() === dayNum) cellClass += ' ' + styles.selected;
-                    else if ([7, 14, 21, 28, 10, 17, 22, 25].includes(dayNum)) cellClass += ' ' + styles.disabled; // Grayed out booked dates
+                  {(() => {
+                    const monthStart = startOfMonth(currentMonth);
+                    const monthEnd = endOfMonth(currentMonth);
+                    const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+                    const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+                    const cells = [];
+                    let day = gridStart;
+                    const today = startOfDay(new Date());
+                    while (day <= gridEnd) {
+                      const date = day;
+                      const dateString = format(date, 'yyyy-MM-dd');
+                      const status = availability[dateString];
+                      const isPast = isBefore(date, today);
+                      const outsideMonth = !isSameMonth(date, monthStart);
+                      const disabled = isPast || !!status || outsideMonth;
+                      const activeDate = isCombo ? (selectingDateFor === 'wedding' ? state.eventDate : state.prenupDate) : state.eventDate;
+                      const selected = activeDate ? isSameDay(date, activeDate) : false;
 
-                    return (
-                      <div 
-                        key={dayNum} 
-                        className={cellClass}
-                        onClick={() => {
-                          if (![7, 14, 21, 28, 10, 17, 22, 25].includes(dayNum)) {
-                            const newDate = new Date(2026, 7, dayNum);
+                      cells.push(
+                        <div
+                          key={dateString}
+                          className={`${styles.calCell}${outsideMonth ? ` ${styles.disabled}` : ''}${disabled ? ` ${styles.disabled}` : ''}${selected ? ` ${styles.selected}` : ''}`}
+                          onClick={() => {
+                            if (disabled) return;
                             if (isCombo) {
-                              if (selectingDateFor === 'wedding') { setDate(newDate); setSelectingDateFor('prenup'); }
-                              else { setPrenupDate(newDate); }
+                              if (selectingDateFor === 'wedding') {
+                                setDate(date);
+                                setSelectingDateFor('prenup');
+                              } else {
+                                setPrenupDate(date);
+                              }
                             } else {
-                              setDate(newDate);
+                              setDate(date);
                             }
-                          }
-                        }}
-                      >
-                        {dayNum}
-                      </div>
-                    );
-                  })}
+                          }}
+                          title={status ? status.toLowerCase() : undefined}
+                        >
+                          {format(date, 'd')}
+                          {status === 'PENDING' && !disabled && <span aria-label="Pending">•</span>}
+                        </div>
+                      );
+                      day = addDays(day, 1);
+                    }
+                    return cells;
+                  })()}
                 </div>
-                
+
+                {availabilityLoading && <div style={{ marginTop: 8, fontSize: 12, opacity: 0.65 }}>Checking availability…</div>}
+
                 <div className={styles.calLegend}>
                   <div className={styles.legendItem}><div className={`${styles.legendDot} ${styles.selected}`}></div> Selected</div>
                   <div className={styles.legendItem}><div className={`${styles.legendDot} ${styles.available}`}></div> Available</div>
@@ -437,7 +594,7 @@ export function BookingWizard() {
           {step === 6 && (
             <div className={styles.stepContent}>
               <h2>Secure Payment</h2>
-              <p className={styles.stepDesc}>Downpayment: ₱{state.quotation?.reservation.toLocaleString()} — via PayMongo</p>
+              <p className={styles.stepDesc}>Downpayment: ₱{state.quotation?.reservation.toLocaleString()} — via Xendit</p>
               
               <div className={styles.paymentGrid}>
                 <div className={`${styles.payOption} ${styles.gcash} ${paymentMethod === 'gcash' ? styles.selected : ''}`} onClick={() => setPaymentMethod('gcash')}>
@@ -506,12 +663,14 @@ export function BookingWizard() {
 
               <div className={styles.sslBadge}>
                 <div className={styles.sslDot}></div>
-                Powered by PayMongo · 256-bit SSL encryption · PCI DSS compliant
+                Powered by Xendit · 256-bit SSL encryption · PCI DSS compliant
               </div>
 
+              {paymentError && <div className={styles.error}>{paymentError}</div>}
+
               <div className={styles.actions}>
-                <button className={styles.actionBtn} onClick={handlePayment} disabled={!paymentMethod}>
-                  Pay ₱{state.quotation?.reservation.toLocaleString()}
+                <button className={styles.actionBtn} onClick={handlePayment} disabled={!paymentMethod || paymentLoading}>
+                  {paymentLoading ? 'Redirecting to checkout…' : `Pay ₱${state.quotation?.reservation.toLocaleString()}`}
                 </button>
               </div>
             </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { formatDateOnly } from '@/utils/date';
 import styles from './InquirySection.module.css';
 
 import { Step1Service, type Category } from '@/features/inquiries/flow/Step1Service';
@@ -47,7 +48,7 @@ export function InquirySection() {
         p_location: details.location,
         p_notes: details.notes,
         p_event_type: category,
-        p_event_date: selectedDate.toISOString().split('T')[0],
+        p_event_date: formatDateOnly(selectedDate),
         p_start_time: '09:00', // Default start time
         p_end_time: '18:00', // Default end time
       });

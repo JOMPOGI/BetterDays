@@ -94,25 +94,23 @@ export function Step2Date({
   };
 
   const renderDays = () => {
-    const dateFormat = 'E';
-    const days = [];
-    let startDate = startOfWeek(currentMonth);
-
-    for (let i = 0; i < 7; i++) {
-      days.push(
-        <div className={styles.colCenter} key={i}>
-          {format(addDays(startDate, i), dateFormat)}
-        </div>
-      );
-    }
-    return <div className={styles.daysRow}>{days}</div>;
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return (
+      <div className={styles.daysRow}>
+        {days.map((d, i) => (
+          <div className={styles.colCenter} key={i}>
+            {d}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const renderCells = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
     const rows = [];
     let days = [];

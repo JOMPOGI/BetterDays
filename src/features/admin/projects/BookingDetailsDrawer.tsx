@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { formatDateOnly } from '@/utils/date';
 import { X, Calendar as CalendarIcon, User, Clock, MapPin, Tag, Navigation } from 'lucide-react';
 import styles from './BookingDetailsDrawer.module.css';
 
@@ -23,7 +24,7 @@ export function BookingDetailsDrawer({ bookingId, onClose }: BookingDetailsDrawe
     } else {
       setBooking({
         status: 'PENDING',
-        event_date: new Date().toISOString().split('T')[0],
+        event_date: formatDateOnly(new Date()),
       });
     }
   }, [bookingId]);

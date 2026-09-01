@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet, useNavigate, NavLink } from 'react-router-dom';
 
 import { CalendarDays, Users, LayoutDashboard, CreditCard, Settings, LogOut } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import styles from './AdminLayout.module.css';
 
 export function AdminLayout() {
@@ -9,7 +10,7 @@ export function AdminLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    localStorage.removeItem('mock_admin_auth');
+    await supabase.auth.signOut();
     navigate('/admin/login');
   };
 
