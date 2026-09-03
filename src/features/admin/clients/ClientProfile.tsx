@@ -1,26 +1,88 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { formatDisplayDate } from '@/utils/date';
 
 import { Checkbox } from '../../../components/ui/Checkbox/Checkbox';
 import { useToast } from '../../../components/ui/Toast/ToastContext';
+import { supabase } from '@/integrations/supabase/client';
+import { EmptyState } from '@/components/ui/EmptyState/EmptyState';
+import { Spinner } from '@/components/ui/Spinner/Spinner';
 import styles from './ClientProfile.module.css';
 import { AddPaymentModal } from '../payments/AddPaymentModal';
 
+type Client = {
+  id: string;
+  full_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+};
+
+type Booking = {
+  id: string;
+  client_id?: string | null;
+  package_type?: string | null;
+  event_type?: string | null;
+  event_date?: string | null;
+  prenup_date?: string | null;
+  location?: string | null;
+  prenup_location?: string | null;
+  package_total?: number | null;
+  reservation_amount?: number | null;
+  status?: string | null;
+  updated_at?: string | null;
+  clients?: Client | null;
+};
+
+type Payment = {
+  id: string;
+  booking_id: string | null;
+  amount: number;
+  status: string | null;
+  paid_at: string | null;
+  method?: string | null;
+};
+
+const PACKAGE_LABELS: Record<string, string> = {
+  wedding: 'Wedding',
+  prenup: 'Prenup',
+  wedding_prenup: 'Wedding + Prenup',
+};
+
+const normalizePackage = (b: Booking) =>
+  String(b.package_type || b.event_type || '').toLowerCase().replace(/[+\-]/g, '_').replace(/\s+/g, '_');
+
+const packageLabel = (b: Booking) => {
+  const key = normalizePackage(b);
+  return PACKAGE_LABELS[key] || key || '—';
+};
+
+const formatCurrency = (amount: number) =>
+  `₱${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const formatDate = (value?: string | null) => formatDisplayDate(value, 'MMM d, yyyy');
+
 export function ClientProfile() {
+  const { id } = useParams<{ id: string }>();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const { addToast } = useToast();
-  
+
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
   const [pipelineState, setPipelineState] = useState<Record<string, boolean>>({
     Booking: true,
-    Payment: true,
-    Questionnaire: true,
+    Payment: false,
+    Questionnaire: false,
     Consultation: false,
     Prenup: false,
     Wedding: false,
     Editing: false,
     Delivered: false
   });
-  
-  const togglePipeline = (key: string) => setPipelineState(prev => ({...prev, [key]: !prev[key]}));
+
+  const togglePipeline = (key: string) => setPipelineState(prev => ({ ...prev, [key]: !prev[key] }));
 
   const scrollTo = (sectionId: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -30,14 +92,79 @@ export function ClientProfile() {
     }
   };
 
+  // Load the specific booking that was clicked (from the calendar or the
+  // projects list), not just "some" booking — this is keyed off the :id
+  // route param, which is the booking id.
+  const load = async () => {
+    if (!id) return;
+    setLoading(true);
+
+    const [{ data: bookingData, error: bookingError }, { data: paymentsData, error: paymentsError }] = await Promise.all([
+      supabase.from('bookings').select('*, clients(*)').eq('id', id).maybeSingle(),
+      supabase.from('payments').select('*').eq('booking_id', id).order('paid_at', { ascending: true }),
+    ]);
+
+    if (bookingError) console.error('ClientProfile booking:', bookingError);
+    if (paymentsError) console.error('ClientProfile payments:', paymentsError);
+
+    if (!bookingData) {
+      setNotFound(true);
+      setBooking(null);
+    } else {
+      setNotFound(false);
+      setBooking(bookingData as Booking);
+    }
+    setPayments((paymentsData || []) as Payment[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+    if (!id) return;
+    const channel = supabase
+      .channel(`admin-client-profile-${id}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings', filter: `id=eq.${id}` }, load)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'payments', filter: `booking_id=eq.${id}` }, load)
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  const paidPayments = useMemo(() => payments.filter(p => p.status === 'paid'), [payments]);
+  const paidTotal = useMemo(() => paidPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0), [paidPayments]);
+  const packageTotal = Number(booking?.package_total || 0);
+  const balance = Math.max(packageTotal - paidTotal, 0);
+
+  if (loading) {
+    return (
+      <div className={styles.container} style={{ alignItems: 'center', justifyContent: 'center', display: 'flex', minHeight: '50vh' }}>
+        <Spinner size={28} />
+      </div>
+    );
+  }
+
+  if (notFound || !booking) {
+    return (
+      <div className={styles.container}>
+        <EmptyState title="Project not found" description="This booking may have been removed or the link is out of date." />
+      </div>
+    );
+  }
+
+  const client = booking.clients;
+  const name = client?.full_name || 'Unknown client';
+  const packageType = normalizePackage(booking);
+  const hasWedding = packageType === 'wedding' || packageType === 'wedding_prenup';
+  const hasPrenup = packageType === 'prenup' || packageType === 'wedding_prenup' || Boolean(booking.prenup_date);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleArea}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <h1 className={styles.title} style={{ margin: 0 }}>Maria Garcia & James Lim</h1>
+            <h1 className={styles.title} style={{ margin: 0 }}>{name}</h1>
             <div>
-              <span className={styles.eventTypeBadge}>Wedding + Prenup</span>
+              <span className={styles.eventTypeBadge}>{packageLabel(booking)}</span>
             </div>
           </div>
         </div>
@@ -51,7 +178,7 @@ export function ClientProfile() {
       </div>
 
       <div className={styles.unifiedDashboard}>
-        
+
         {/* SECTION 1: Operations */}
         <section id="operations" className={styles.section}>
           <h2 className={styles.sectionTitle}>1. Operations & Schedule</h2>
@@ -68,26 +195,23 @@ export function ClientProfile() {
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>Events Schedule</h2>
               <div className={styles.eventsList}>
-                <div className={styles.eventCard}>
-                  <h4>Initial Consultation</h4>
-                  <p><strong>Date:</strong> Aug 15, 2026</p>
-                  <p><strong>Type:</strong> Online (Zoom)</p>
-                  <p><strong>Time:</strong> 2:00 PM</p>
-                </div>
-                <div className={styles.eventCard}>
-                  <h4>Prenup Session</h4>
-                  <p><strong>Date:</strong> Sep 20, 2026</p>
-                  <p><strong>Location:</strong> Rizal Park</p>
-                  <p><strong>Call Time:</strong> 8:00 AM</p>
-                </div>
-                <div className={styles.eventCard}>
-                  <h4>Wedding Day</h4>
-                  <p><strong>Date:</strong> Oct 15, 2026</p>
-                  <p><strong>Preparation:</strong> Manila Hotel</p>
-                  <p><strong>Ceremony:</strong> Manila Cathedral</p>
-                  <p><strong>Reception:</strong> The Blue Leaf</p>
-                  <p><strong>Call Time:</strong> 6:00 AM</p>
-                </div>
+                {hasWedding && booking.event_date && (
+                  <div className={styles.eventCard}>
+                    <h4>Wedding Day</h4>
+                    <p><strong>Date:</strong> {formatDate(booking.event_date)}</p>
+                    {booking.location && <p><strong>Location:</strong> {booking.location}</p>}
+                  </div>
+                )}
+                {hasPrenup && (booking.prenup_date || booking.event_date) && (
+                  <div className={styles.eventCard}>
+                    <h4>Prenup Session</h4>
+                    <p><strong>Date:</strong> {formatDate(booking.prenup_date || booking.event_date)}</p>
+                    {booking.prenup_location && <p><strong>Location:</strong> {booking.prenup_location}</p>}
+                  </div>
+                )}
+                {!booking.event_date && !booking.prenup_date && (
+                  <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem' }}>No dates scheduled yet.</p>
+                )}
               </div>
             </div>
           </div>
@@ -105,23 +229,23 @@ export function ClientProfile() {
                   <button className={styles.recordBtn} onClick={() => setIsPaymentModalOpen(true)}>Record Payment</button>
                 </div>
               </div>
-              
+
               <div className={styles.metricsRow} style={{ marginBottom: '2rem' }}>
                 <div className={styles.metric}>
                   <span className={styles.metricLabel}>Event Date</span>
-                  <span className={styles.metricValue}>Oct 15, 2026</span>
+                  <span className={styles.metricValue}>{formatDate(booking.event_date || booking.prenup_date)}</span>
                 </div>
                 <div className={styles.metric}>
                   <span className={styles.metricLabel}>Package Worth</span>
-                  <span className={styles.metricValue}>₱150,000.00</span>
+                  <span className={styles.metricValue}>{formatCurrency(packageTotal)}</span>
                 </div>
                 <div className={styles.metric}>
                   <span className={styles.metricLabel}>Paid DP</span>
-                  <span className={styles.metricValue}>₱65,000.00</span>
+                  <span className={styles.metricValue}>{formatCurrency(paidTotal)}</span>
                 </div>
                 <div className={styles.metric}>
                   <span className={styles.metricLabel}>Outstanding Balance</span>
-                  <span className={styles.metricValueGold}>₱85,000.00</span>
+                  <span className={styles.metricValueGold}>{formatCurrency(balance)}</span>
                 </div>
               </div>
 
@@ -135,29 +259,35 @@ export function ClientProfile() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Jul 1, 2026</td>
-                    <td>Downpayment</td>
-                    <td className={styles.rightAlign}>₱65,000.00</td>
-                    <td className={styles.rightAlign}>₱85,000.00</td>
-                  </tr>
+                  {paidPayments.length === 0 ? (
+                    <tr><td colSpan={4} style={{ padding: '1.5rem 0', textAlign: 'center', color: 'var(--admin-text-muted)' }}>No payments recorded yet.</td></tr>
+                  ) : (
+                    (() => {
+                      let running = packageTotal;
+                      return paidPayments.map(p => {
+                        running -= Number(p.amount || 0);
+                        return (
+                          <tr key={p.id}>
+                            <td>{formatDate(p.paid_at)}</td>
+                            <td>{p.method || 'Payment'}</td>
+                            <td className={styles.rightAlign}>{formatCurrency(Number(p.amount || 0))}</td>
+                            <td className={styles.rightAlign}>{formatCurrency(Math.max(running, 0))}</td>
+                          </tr>
+                        );
+                      });
+                    })()
+                  )}
                 </tbody>
               </table>
             </div>
 
             <div className={styles.card}>
-              <h2 className={styles.cardTitle}>Booking & Inclusions</h2>
+              <h2 className={styles.cardTitle}>Booking & Scope</h2>
               <div className={styles.bookingBox}>
-                <p><strong>Selected Package:</strong> Wedding Premium (₱150,000.00)</p>
-                <p><strong>Inclusions:</strong></p>
-                <ul className={styles.inclusionList}>
-                  <li>Full Day Coverage</li>
-                  <li>2 Photographers, 3 Videographers</li>
-                  <li>Same Day Edit (SDE)</li>
-                  <li>Prenup Session</li>
-                  <li>Premium Album</li>
-                </ul>
-                <p><strong>Contract Status:</strong> Signed on July 1, 2026</p>
+                <p><strong>Selected Package:</strong> {packageLabel(booking)} ({formatCurrency(packageTotal)})</p>
+                <p><strong>Status:</strong> {String(booking.status || '—').replace(/_/g, ' ')}</p>
+                {booking.location && <p><strong>Wedding Location:</strong> {booking.location}</p>}
+                {booking.prenup_location && <p><strong>Prenup Location:</strong> {booking.prenup_location}</p>}
               </div>
             </div>
           </div>
@@ -165,31 +295,22 @@ export function ClientProfile() {
 
         {/* SECTION 3: Client Details */}
         <section id="details" className={styles.section}>
-          <h2 className={styles.sectionTitle}>3. Client Details & Vision</h2>
+          <h2 className={styles.sectionTitle}>3. Client Details</h2>
           <div className={styles.dashboardRow}>
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>Client Contact</h2>
               <div className={styles.contactGrid}>
                 <div className={styles.contactBox}>
-                  <h3>Bride</h3>
-                  <p><strong>Name:</strong> Maria Garcia</p>
-                  <p><strong>Email:</strong> maria@example.com</p>
-                  <p><strong>Phone:</strong> +63 917 123 4567</p>
-                  <p><strong>IG:</strong> @mariagarcia</p>
-                </div>
-                <div className={styles.contactBox}>
-                  <h3>Groom</h3>
-                  <p><strong>Name:</strong> James Lim</p>
-                  <p><strong>Email:</strong> james@example.com</p>
-                  <p><strong>Phone:</strong> +63 918 765 4321</p>
-                  <p><strong>IG:</strong> @jameslim</p>
+                  <p><strong>Name:</strong> {client?.full_name || '—'}</p>
+                  <p><strong>Email:</strong> {client?.email || '—'}</p>
+                  <p><strong>Phone:</strong> {client?.phone || '—'}</p>
                 </div>
               </div>
             </div>
-            
+
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>Internal Notes</h2>
-              <textarea className={styles.notesArea} defaultValue="Maria requested we don't shoot from her left side. James's dad is arriving late, so adjust family portraits to reception." />
+              <textarea className={styles.notesArea} defaultValue="" placeholder="Add internal notes about this project..." />
               <button className={styles.recordBtn} onClick={() => addToast('Internal notes saved.', 'success')}>Save Notes</button>
             </div>
           </div>
@@ -197,66 +318,21 @@ export function ClientProfile() {
           <div className={styles.dashboardRow} style={{ gridTemplateColumns: '1fr' }}>
             <div className={styles.card}>
               <h2 className={styles.cardTitle}>Creative Vision (Questionnaire)</h2>
-              <div className={styles.qnaList}>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: Describe your ideal video. (Check all that apply.)</p>
-                  <p className={styles.answer}>A: Candid / Chill, Cinematic / Epic, Feel Good / Fun, MEANINGFUL, CAPTURES THE SENTIMENTAL MOMENTS</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: Any samples / pegs you want to show?</p>
-                  <p className={styles.answer}>A: Yes, sent 3 video links via email last week.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: What are your must-not-miss shots?</p>
-                  <p className={styles.answer}>A: Walking down the aisle, Look of the groom, Vows, Silly and fun moments.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: How long have you been together?</p>
-                  <p className={styles.answer}>A: 7 years.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: Tell us about the spark. How did you meet? When? Where? What was it like?</p>
-                  <p className={styles.answer}>A: We met in college during a group project in 2019. It was awkward at first, but we instantly bonded over our mutual stress for the subject.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: What did you like about each other then?</p>
-                  <p className={styles.answer}>A: James was very organized. Maria was very creative.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: What do you enjoy doing together? What is a usual date for you?</p>
-                  <p className={styles.answer}>A: We love trying new coffee shops and going on long drives with no destination. A usual date is just ordering takeout and watching movies.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: Any unforgettable moments you'd like to share?</p>
-                  <p className={styles.answer}>A: Our trip to Japan when we got lost in Kyoto and missed our train.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: Any sentimental items or things during the course of your relationship?</p>
-                  <p className={styles.answer}>A: A film camera we bought together during our first year.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: What do you hate or dislike about each other?</p>
-                  <p className={styles.answer}>A: James takes too long to get ready. Maria can never decide where to eat.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: Tell us about your engagement.</p>
-                  <p className={styles.answer}>A: It happened at sunset on a beach in Siargao. Very private and intimate, just the two of us.</p>
-                </div>
-                <div className={styles.qnaItem}>
-                  <p className={styles.question}>Q: What do you love about each other now? Basically, why are you marrying this person?</p>
-                  <p className={styles.answer}>A: Because we balance each other out perfectly. We are home to each other.</p>
-                </div>
-              </div>
+              <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.9rem' }}>
+                No questionnaire responses submitted yet for this project.
+              </p>
             </div>
           </div>
         </section>
 
       </div>
 
-      <AddPaymentModal 
-        isOpen={isPaymentModalOpen} 
-        onClose={() => setIsPaymentModalOpen(false)} 
-        projectName="Garcia & Lim - Wedding Premium" 
+      <AddPaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        bookingId={booking.id}
+        projectName={`${name} - ${packageLabel(booking)}`}
+        onSaved={load}
       />
     </div>
   );

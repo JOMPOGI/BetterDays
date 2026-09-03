@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import styles from './Login.module.css';
 
 export function Login() {
@@ -14,14 +15,14 @@ export function Login() {
     setLoading(true);
     setError(null);
 
-    // Mock authentication
-    if (email === 'jombenitez96@gmail.com' && password === 'Fanny26!') {
-      localStorage.setItem('mock_admin_auth', 'true');
-      navigate('/admin');
-    } else {
-      setError('Invalid login credentials');
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      setError(loginError.message || 'Invalid login credentials');
       setLoading(false);
+      return;
     }
+
+    navigate('/admin');
   };
 
   return (
@@ -32,25 +33,11 @@ export function Login() {
           {error && <div className={styles.error}>{error}</div>}
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} />
           </div>
           <button type="submit" disabled={loading} className={styles.submitBtn}>
             {loading ? 'Logging in...' : 'Login'}

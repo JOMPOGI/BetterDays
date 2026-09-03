@@ -10,7 +10,7 @@
   --book-gold-light: rgba(255, 255, 255, 0.1);
 
   min-height: 100dvh;
-  width: 100vw;
+  width: 100%;
   background: var(--book-bg);
   color: var(--book-text);
   display: flex;
@@ -254,6 +254,18 @@
 }
 .backBtn:hover {
   color: var(--book-text);
+}
+
+.dateTabContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+@media (max-width: 480px) {
+  .dateTabContainer {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 /* CALENDAR (Step 2) */
@@ -665,15 +677,31 @@
   .packageHeader { flex-direction: column; align-items: flex-start; gap: 8px; }
   .price { align-self: flex-start; }
   
-  .calendarContainer { padding: 16px; }
-  .calCell { font-size: 0.85rem; }
+  .calendarContainer { padding: 16px 12px; }
+  .calendarGrid { gap: 6px; }
+  .calCell { font-size: 0.85rem; padding: 8px 0; }
+  .calDayHeader { margin-bottom: 8px; font-size: 0.75rem; }
+  .calLegend { gap: 16px; font-size: 0.75rem; margin-top: 20px; flex-wrap: wrap; }
   .dateSummaryPill { padding: 12px 16px; }
   
-  .actions { flex-direction: column-reverse; gap: 16px; }
+  .actions { flex-direction: column-reverse; gap: 12px; }
   .actionBtn { width: 100%; justify-content: center; }
   .backBtn { width: 100%; justify-content: center; }
   
   .paymentGrid { grid-template-columns: 1fr; }
+  .quoteTop { flex-direction: column; gap: 12px; }
+  .quoteTopRight { text-align: left; }
+  .darkQuoteCard { padding: 20px 16px; }
+}
+
+@media (max-width: 400px) {
+  .main { padding: 24px 4vw; }
+  .calendarContainer { padding: 12px 8px; }
+  .calendarGrid { gap: 4px; }
+  .calCell { font-size: 0.8rem; }
+  .stepHeader > h2 { font-size: 1.8rem; }
+  .pillGrid { gap: 8px; }
+  .briefPill { padding: 10px 14px; font-size: 0.85rem; }
 }
 
 /* --- Post-Booking Flow (Payment Confirmed & Questionnaire) --- */
@@ -857,4 +885,14 @@
 }
 .textarea::placeholder {
   color: #555;
+}
+
+.error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-top: 12px;
 }

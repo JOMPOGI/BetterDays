@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import styles from './ProjectsDashboard.module.css';
 import { User, Mail, Phone, ArrowRight, X, Calendar, Clock, MapPin, Tag } from 'lucide-react';
 import { format } from 'date-fns';
+import { formatDisplayDate } from '@/utils/date';
 import { Button } from '@/components/ui/Button/Button';
 import { Input } from '@/components/ui/Input/Input';
 import { Badge } from '@/components/ui/Badge/Badge';
@@ -128,7 +129,7 @@ export function Clients() {
                     </div>
                   </td>
                   <td>{client.total_bookings}</td>
-                  <td>{client.last_booking !== '-' ? format(new Date(client.last_booking), 'MMM d, yyyy') : '-'}</td>
+                  <td>{client.last_booking !== '-' ? formatDisplayDate(client.last_booking, 'MMM d, yyyy') : '-'}</td>
                   <td>
                     <Badge variant={
                       client.status.toLowerCase() === 'confirmed' ? 'success' :
@@ -197,7 +198,7 @@ export function Clients() {
                         <div className={styles.timelineDot} />
                         <div className={styles.timelineContent}>
                           <div className={styles.timelineHeader}>
-                            <strong>{format(new Date(booking.event_date), 'MMMM d, yyyy')}</strong>
+                            <strong>{formatDisplayDate(booking.event_date, 'MMMM d, yyyy')}</strong>
                             <span className={`${styles.statusBadge} ${styles[booking.status.toLowerCase()]}`}>
                               {booking.status}
                             </span>
