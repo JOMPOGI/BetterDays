@@ -1,7 +1,7 @@
 import { Search, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { format, isSameDay, parseISO, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { useToast } from '@/components/ui/Toast/ToastContext';
 import { supabase } from '@/integrations/supabase/client';
 import styles from './AdminDashboard.module.css';
