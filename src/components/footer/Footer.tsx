@@ -28,6 +28,7 @@ export function Footer() {
         <div className={styles.footCol}>
           <span className={styles.footHead}>Contact</span>
           <a href="https://instagram.com/betterdaysstudios" target="_blank" rel="noreferrer"><strong>Instagram:</strong> @betterdaysstudios</a>
+          <a href="https://www.facebook.com/betterdaysstudios" target="_blank" rel="noreferrer"><strong>Facebook:</strong> Better Days Studios</a>
           <a href="tel:09278519773"><strong>Phone:</strong> 0927 851 9773</a>
           <a href="mailto:studiosbetterdays@gmail.com"><strong>Email:</strong> studiosbetterdays@gmail.com</a>
           <a href="#"><strong>Messenger:</strong> Better Days Studios</a>

@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     const invoice = await res.json();
     if (!res.ok) {
       console.error('Xendit API error:', invoice);
-      return new Response(JSON.stringify({ error: 'Payment service is temporarily unavailable.' }), {
+      return new Response(JSON.stringify({ error: 'Payment service is temporarily unavailable.', _debug: invoice }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
