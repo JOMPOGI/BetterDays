@@ -10,6 +10,8 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -37,7 +39,25 @@ export function Login() {
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required disabled={loading} />
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                id="password" 
+                type={showPassword ? 'text' : 'password'} 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                required 
+                disabled={loading} 
+                style={{ width: '100%', paddingRight: '40px' }}
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
           </div>
           <button type="submit" disabled={loading} className={styles.submitBtn}>
             {loading ? 'Logging in...' : 'Login'}
