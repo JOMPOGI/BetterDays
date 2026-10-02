@@ -205,7 +205,7 @@ export function BookingWizard() {
       }
     } catch (error: any) {
       console.error('Booking submission failed:', error);
-      setPaymentError(error?.message || 'Unable to start checkout. Please try again.');
+      setPaymentError('Something went wrong while processing your booking. Please try again in a moment. If the issue persists, contact us directly.');
       setPaymentLoading(false);
       isSubmittingRef.current = false;
     }

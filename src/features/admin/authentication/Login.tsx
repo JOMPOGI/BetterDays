@@ -17,7 +17,7 @@ export function Login() {
 
     const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
     if (loginError) {
-      setError(loginError.message || 'Invalid login credentials');
+      setError('Invalid email or password. Please try again.');
       setLoading(false);
       return;
     }

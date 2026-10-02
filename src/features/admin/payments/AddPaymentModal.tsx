@@ -78,7 +78,7 @@ export function AddPaymentModal({ isOpen, onClose, bookingId, projectName, onSav
       onClose();
       setAmount('');
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Could not record payment.', 'error');
+      addToast('Could not record payment. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

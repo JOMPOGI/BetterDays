@@ -61,7 +61,7 @@ export function AddProjectModal({ isOpen, onClose, onAdd = () => {} }: AddProjec
       onClose();
       setName(''); setEmail(''); setPhone(''); setPkgLabel(''); setDate(''); setDpStatus('Unpaid');
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Could not add project.', 'error');
+      addToast('Could not add project. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

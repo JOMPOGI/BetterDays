@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
     const { bookingId, amount, email, description, successUrl, failureUrl } = await req.json();
 
     if (!bookingId || !amount || amount <= 0) {
-      return new Response(JSON.stringify({ error: 'Missing bookingId or invalid amount' }), {
+      return new Response(JSON.stringify({ error: 'Invalid request.' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -20,7 +20,8 @@ Deno.serve(async (req) => {
 
     const secretKey = Deno.env.get('XENDIT_SECRET_KEY');
     if (!secretKey) {
-      return new Response(JSON.stringify({ error: 'Server missing XENDIT_SECRET_KEY' }), {
+      console.error('XENDIT_SECRET_KEY is not set.');
+      return new Response(JSON.stringify({ error: 'Payment service is temporarily unavailable.' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -48,7 +49,8 @@ Deno.serve(async (req) => {
 
     const invoice = await res.json();
     if (!res.ok) {
-      return new Response(JSON.stringify(invoice), {
+      console.error('Xendit API error:', invoice);
+      return new Response(JSON.stringify({ error: 'Payment service is temporarily unavailable.' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -59,7 +61,8 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
+    console.error('create-xendit-invoice error:', err);
+    return new Response(JSON.stringify({ error: 'Payment service is temporarily unavailable.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
