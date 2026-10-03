@@ -165,8 +165,13 @@ export function Payments() {
         </div>
       </div>
 
-      <div className={styles.footer}>
+      <div className={styles.footer} style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
         <div>{filteredLedger.length} record{filteredLedger.length === 1 ? '' : 's'}</div>
+        <div style={{display:'flex',gap:'1rem',alignItems:'center'}}>
+          <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} style={{padding:'4px 8px',border:'1px solid #ddd',background:'#fff',cursor: currentPage===1?'not-allowed':'pointer'}}>Prev</button>
+          <span>Page {currentPage} of {totalPages || 1}</span>
+          <button disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} style={{padding:'4px 8px',border:'1px solid #ddd',background:'#fff',cursor: (currentPage === totalPages || totalPages === 0)?'not-allowed':'pointer'}}>Next</button>
+        </div>
       </div>
 
       <AddPaymentModal
