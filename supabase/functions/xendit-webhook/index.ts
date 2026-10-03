@@ -10,7 +10,13 @@ Deno.serve(async (req) => {
     const receivedToken = req.headers.get('x-callback-token');
     const expectedToken = Deno.env.get('XENDIT_WEBHOOK_TOKEN');
 
+    console.log("=== WEBHOOK DEBUG LOG ===");
+    console.log("1. Token received from Xendit:", receivedToken);
+    console.log("2. Token inside Supabase Secrets:", expectedToken);
+    console.log("=========================");
+
     if (!expectedToken || receivedToken !== expectedToken) {
+      console.log("ERROR: Tokens do not match! Rejecting with 401.");
       return new Response('Unauthorized', { status: 401 });
     }
 
@@ -54,7 +60,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error('xendit-webhook error:', err);
     // Return 200 anyway so Xendit doesn't endlessly retry on our bugs;
-    // check `supabase functions logs xendit-webhook` to debug.
+    // check \supabase functions logs xendit-webhook\ to debug.
     return new Response('ok');
   }
 });
