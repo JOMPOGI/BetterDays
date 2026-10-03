@@ -38,6 +38,7 @@ const isActive = (status?: string | null) =>
 export function ClientsList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('Date');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,6 +82,9 @@ export function ClientsList() {
       if (sortBy === 'Package') return a.package.localeCompare(b.package);
       return new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime();
     });
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredClients.length / ITEMS_PER_PAGE);
+  const paginatedClients = filteredClients.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className={styles.container}>
@@ -92,7 +96,7 @@ export function ClientsList() {
             placeholder="Search projects by name..."
             className={styles.searchInput}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
           />
         </div>
 
@@ -101,7 +105,7 @@ export function ClientsList() {
             <select
               className={styles.sortSelect}
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
             >
               <option value="Date">Sort: Date</option>
               <option value="Name">Sort: Name</option>
@@ -144,7 +148,7 @@ export function ClientsList() {
                   </td>
                 </tr>
               ) : (
-                filteredClients.map(client => (
+                paginatedClients.map(client => (
                   <tr key={client.id}>
                     <td><div className={styles.coupleCell}>{client.name}</div></td>
                     <td>

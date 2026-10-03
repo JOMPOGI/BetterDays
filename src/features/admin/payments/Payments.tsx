@@ -25,6 +25,7 @@ type Payment = {
 
 export function Payments() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [arEntry, setArEntry] = useState<{ client: string; amount: number } | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -37,7 +38,7 @@ export function Payments() {
 
   const load = async () => {
     const [{ data: bookingsData, error: bookingsError }, { data: paymentsData, error: paymentsError }] = await Promise.all([
-      supabase.from('bookings').select('*, clients(full_name)').order('updated_at', { ascending: false }),
+      supabase.from('bookings').select('*, clients(full_name)').order('created_at', { ascending: false }),
       supabase.from('payments').select('id, booking_id, amount, status, paid_at'),
     ]);
 
@@ -82,6 +83,9 @@ export function Payments() {
   const filteredLedger = ledger.filter((entry) =>
     entry.client.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const ITEMS_PER_PAGE = 10;
+  const totalPages = Math.ceil(filteredLedger.length / ITEMS_PER_PAGE);
+  const paginatedLedger = filteredLedger.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   return (
     <div className={styles.container}>
@@ -98,7 +102,7 @@ export function Payments() {
               placeholder="Search client..."
               className={styles.searchInput}
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             />
           </div>
           <button className={styles.filterBtn} onClick={() => addToast('Filtering coming soon', 'info')}>
@@ -130,7 +134,7 @@ export function Payments() {
               ) : filteredLedger.length === 0 ? (
                 <tr><td colSpan={7} style={{ padding: '3rem 0', textAlign: 'center' }}>No payment records yet.</td></tr>
               ) : (
-                filteredLedger.map(entry => (
+                paginatedLedger.map(entry => (
                   <tr key={entry.id}>
                     <td>{entry.date}</td>
                     <td><strong>{entry.client}</strong></td>

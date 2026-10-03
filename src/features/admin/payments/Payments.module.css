@@ -1,4 +1,4 @@
-.container {
+﻿.container {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -146,6 +146,8 @@
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 65vh;
 }
 
 .table {
@@ -337,3 +339,4 @@
   border-color: var(--admin-text-dark);
   color: #fff;
 }
+
